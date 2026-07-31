@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kemence Akadémia — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="../css/dialog.css">
+</head>
+<body>
+
+<!-- ===================== Bejelentkezés ===================== -->
+<div id="loginView" class="login-wrap" hidden>
+  <form id="loginForm" class="login-card">
+    <div class="brand">
+      <svg class="flame" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1C11 6 16 7 16 13c0 4-2.7 9-6 9s-6-4-6-8c0-3 2-3.5 2.5-6C7.5 11 9 9 10 1Z" fill="url(#fg)"/><defs><linearGradient id="fg" x1="10" y1="1" x2="10" y2="22"><stop stop-color="#FBBF3C"/><stop offset="1" stop-color="#E4571B"/></linearGradient></defs></svg>
+      Kemence Akadémia · Admin
+    </div>
+    <h1>Bejelentkezés</h1>
+    <label>E-mail <input name="email" type="email" autocomplete="username" required></label>
+    <label>Jelszó <input name="jelszo" type="password" autocomplete="current-password" required></label>
+    <p class="form-err" id="loginErr" hidden></p>
+    <button class="btn" type="submit" id="loginBtn">Belépés</button>
+  </form>
+</div>
+
+<!-- ===================== Admin felület ===================== -->
+<div id="adminView" hidden>
+  <header class="admin-header">
+    <div class="wrap">
+      <span class="brand">
+        <svg class="flame" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1C11 6 16 7 16 13c0 4-2.7 9-6 9s-6-4-6-8c0-3 2-3.5 2.5-6C7.5 11 9 9 10 1Z" fill="url(#fg2)"/><defs><linearGradient id="fg2" x1="10" y1="1" x2="10" y2="22"><stop stop-color="#FBBF3C"/><stop offset="1" stop-color="#E4571B"/></linearGradient></defs></svg>
+        Kemence Akadémia · Admin
+      </span>
+      <div class="right">
+        <span id="whoami"></span>
+        <button id="logoutBtn" class="btn ghost sm">Kilépés</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="tabs">
+      <button class="tab active" data-tab="foglalasok">Foglalások</button>
+      <button class="tab" data-tab="naptar">Naptár</button>
+      <button class="tab" data-tab="programok">Programok</button>
+      <button class="tab" data-tab="beallitasok">Beállítások</button>
+    </nav>
+
+    <!-- ===== Foglalások fül ===== -->
+    <section class="tab-panel" data-panel="foglalasok">
+      <div class="altabs foglalas-fulek">
+        <button class="altab active" data-fstat="jovahagyasra_var">Jóváhagyásra vár <span class="db"></span></button>
+        <button class="altab" data-fstat="jovahagyott">Jóváhagyott <span class="db"></span></button>
+        <button class="altab" data-fstat="elutasitott">Elutasított <span class="db"></span></button>
+        <button class="altab" data-fstat="lemondott">Lemondott <span class="db"></span></button>
+      </div>
+      <div class="filterbar">
+        <label>Program
+          <select id="fProgram"><option value="">Összes program</option></select>
+        </label>
+        <label>Vendég neve
+          <input id="fNev" type="search" autocomplete="off">
+        </label>
+        <label>Időállapot
+          <select id="fIdoallapot">
+            <option value="">Összes</option>
+            <option value="kozeledo">Jövőbeli</option>
+            <option value="ma">Ma</option>
+            <option value="multbeli">Múltbéli</option>
+          </select>
+        </label>
+        <div class="export-gombok">
+          <button type="button" class="btn sm ghost" id="exportExcel" title="A jelenleg látott lista letöltése Excelbe">📊 Excel</button>
+        </div>
+      </div>
+      <div id="foglalasok"><p class="status">Betöltés…</p></div>
+    </section>
+
+    <!-- ===== Naptár fül ===== -->
+    <section class="tab-panel" data-panel="naptar" hidden>
+      <div class="naptar-fejlec">
+        <div class="ho-lepto">
+          <button class="btn ghost sm" id="hoElozo" aria-label="Előző év">‹</button>
+          <h3 id="hoCimke">—</h3>
+          <button class="btn ghost sm" id="hoKovetkezo" aria-label="Következő év">›</button>
+          <button class="btn ghost sm" id="hoMa">Idén</button>
+        </div>
+        <div class="naptar-ossz" id="naptarOssz"></div>
+      </div>
+      <div id="naptarRacs" class="naptar-racs"><p class="status">Betöltés…</p></div>
+      <div id="naptarReszletek" class="naptar-reszletek"></div>
+    </section>
+
+    <!-- ===== Programok fül ===== -->
+    <section class="tab-panel" data-panel="programok" hidden>
+      <div class="prog-fejlec">
+        <div class="altabs">
+          <button class="altab active" data-altab="aktualis">Aktuális programok</button>
+          <button class="altab" data-altab="archivalt">Archivált programok</button>
+        </div>
+        <button class="btn" id="ujProgramBtn">+ Új program</button>
+      </div>
+      <div id="programLista"><p class="status">Betöltés…</p></div>
+    </section>
+
+    <!-- ===== Beállítások fül ===== -->
+    <section class="tab-panel" data-panel="beallitasok" hidden>
+
+      <form id="formAltalanos" class="beall-card">
+        <h3>Általános</h3>
+        <label>Csapat e-mail cím <small>(ide jönnek a foglalás-értesítők, és ez a válaszcím a vendég-leveleken)</small>
+          <input name="levelezesi_email" type="email">
+        </label>
+        <label>Foglalási info-sáv <small>(a foglalási űrlapon jelenik meg)</small>
+          <textarea name="foglalas_infosav" rows="3"></textarea>
+        </label>
+        <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
+      </form>
+
+      <form id="formAzonosito" class="beall-card">
+        <h3>Foglalási azonosító formátuma</h3>
+        <div class="ket-mezo">
+          <label>Előtag <small>(max 2 karakter)</small>
+            <input name="azonosito_elotag" maxlength="2">
+          </label>
+          <label>Kezdő sorszám <small>(1–999)</small>
+            <input name="azonosito_kezdo" type="number" min="1" max="999">
+          </label>
+        </div>
+        <p class="preview">Az első foglalás így nézne ki: <b id="azonPreview">F-100</b></p>
+        <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
+      </form>
+
+      <div class="beall-card">
+        <h3>E-mail sablonok</h3>
+        <p class="hint">Behelyettesíthető mezők: <code>{nev}</code> <code>{email}</code> <code>{telefon}</code> <code>{program}</code> <code>{idopont}</code> <code>{letszam}</code> <code>{azonosito}</code></p>
+        <div id="sablonok"><p class="status">Betöltés…</p></div>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<!-- Foglalás-szerkesztő ablak (rejtve) -->
+<div class="modal" id="szerkModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="szTitle">
+    <button class="modal-close" id="szClose" aria-label="Bezárás">×</button>
+    <h2 id="szTitle" class="m-title">Foglalás szerkesztése</h2>
+    <form id="szerkForm" class="mform">
+      <label>Program / időpont
+        <select name="workshop_id" id="szProgram"></select>
+      </label>
+      <div class="ket-mezo">
+        <label>Név <input name="nev" type="text" required></label>
+        <label>Létszám (fő) <input name="letszam" type="number" min="1" step="1" required></label>
+      </div>
+      <div class="ket-mezo">
+        <label>E-mail <input name="email" type="email" required></label>
+        <label>Telefon <input name="telefon" type="tel" required></label>
+      </div>
+      <label>Megjegyzés <textarea name="megjegyzes" rows="2"></textarea></label>
+      <p class="form-err" id="szErr" hidden></p>
+      <div class="beall-foot">
+        <button class="btn" type="submit">Mentés</button>
+        <button class="btn ghost" type="button" id="szMegse">Mégse</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Levél-előnézet / szerkesztő ablak (rejtve) -->
+<div class="modal" id="levelModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="levelCim">
+    <button class="modal-close" id="levelClose" aria-label="Bezárás">×</button>
+    <h2 id="levelCim" class="m-title">✉ Levél</h2>
+    <form id="levelForm" class="mform">
+      <p class="level-cimzett">Címzett: <b id="levelCimzett"></b></p>
+      <label>Tárgy <input name="targy" type="text" required></label>
+      <label>Törzsszöveg <textarea name="torzs" rows="12"></textarea></label>
+      <p class="hint">Az előnézet a sablonból készült, a mezők behelyettesítve. Küldés előtt szabadon módosíthatod.</p>
+      <p class="form-err" id="levelErr" hidden></p>
+      <div class="beall-foot">
+        <button class="btn" type="submit">Küldés</button>
+        <button class="btn ghost" type="button" id="levelMegse">Mégse</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Program-szerkesztő ablak (rejtve) -->
+<div class="modal" id="progModal" hidden>
+  <div class="modal-card modal-lg" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+    <button class="modal-close" id="pClose" aria-label="Bezárás">×</button>
+    <h2 id="pTitle" class="m-title">Új program</h2>
+    <form id="progForm" class="mform">
+      <label>Állapot
+        <select name="statusz" id="pStatusz">
+          <option value="aktiv">Aktív (foglalható)</option>
+          <option value="hamarosan">Hamarosan (csak megjelenik, nem foglalható)</option>
+        </select>
+      </label>
+      <label>Cím <input name="cim" type="text" required></label>
+      <div class="mezo">
+        <span class="mezo-cimke">Rövid leírás <small>(ez jelenik meg a kártyán)</small></span>
+        <div class="rte">
+          <div class="rte-tb">
+            <button type="button" class="rte-b" data-cmd="bold" title="Félkövér"><b>B</b></button>
+            <button type="button" class="rte-b" data-cmd="italic" title="Dőlt"><i>I</i></button>
+            <button type="button" class="rte-b" data-cmd="underline" title="Aláhúzás"><u>U</u></button>
+            <button type="button" class="rte-b" data-size="1" title="Nagyobb betű">A+</button>
+            <button type="button" class="rte-b" data-size="-1" title="Kisebb betű">A−</button>
+          </div>
+          <div class="rte-ed" id="edRovid" contenteditable="true" data-ph="Rövid leírás…"></div>
+        </div>
+      </div>
+      <div class="mezo">
+        <span class="mezo-cimke">Részletes leírás <small>(opcionális, a „Részletek" ablakban)</small></span>
+        <div class="rte">
+          <div class="rte-tb">
+            <button type="button" class="rte-b" data-cmd="bold" title="Félkövér"><b>B</b></button>
+            <button type="button" class="rte-b" data-cmd="italic" title="Dőlt"><i>I</i></button>
+            <button type="button" class="rte-b" data-cmd="underline" title="Aláhúzás"><u>U</u></button>
+            <button type="button" class="rte-b" data-size="1" title="Nagyobb betű">A+</button>
+            <button type="button" class="rte-b" data-size="-1" title="Kisebb betű">A−</button>
+            <button type="button" class="rte-b" data-cmd="insertUnorderedList" title="Felsorolás">•—</button>
+          </div>
+          <div class="rte-ed rte-nagy" id="edReszletes" contenteditable="true" data-ph="Részletes leírás…"></div>
+        </div>
+      </div>
+      <div class="ket-mezo">
+        <label>Ár (Ft) <input name="ar" type="number" min="0" step="1"></label>
+        <label>Kedvezményes ár (Ft) <small>opcionális</small> <input name="kedvezmenyes_ar" type="number" min="0" step="1"></label>
+      </div>
+      <div class="ket-mezo">
+        <label>Időpont <input name="idopont" type="datetime-local"></label>
+        <label>Max létszám <input name="max_letszam" type="number" min="1" step="1"></label>
+      </div>
+      <label>Várható időtartam <small>opcionális, pl. „~4 óra"</small> <input name="varhato_idotartam" type="text"></label>
+      <label>Fotó <small>opcionális</small>
+        <input name="foto" id="pFoto" type="file" accept="image/*">
+      </label>
+      <div id="pFotoElonezet" class="foto-elonezet" hidden><img id="pFotoImg" alt="program fotó"></div>
+      <p class="form-err" id="pErr" hidden></p>
+      <div class="beall-foot">
+        <button class="btn" type="submit">Mentés</button>
+        <button class="btn ghost" type="button" id="pMegse">Mégse</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/dialog.js" defer></script>
+<script src="admin.js" defer></script>
+</body>
+</html>

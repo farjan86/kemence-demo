@@ -1,0 +1,253 @@
+/* =====================================================================
+   Kemence Akadémia — ADMIN stílus (önálló, sötét paletta)
+   ===================================================================== */
+:root{
+  --korom:#16100B; --korom-2:#1E150E; --brick:#271B12; --brick-2:#2F2016;
+  --line:#3C2A1C; --parazs:#E4571B; --lang:#F59E1B; --lang-2:#FBBF3C;
+  --izzas:#FCE9C4; --text:#F1E4D2; --hamu:#B49E86; --hamu-2:#8B7660;
+  --ok:#2FA35A; --warn:#E8952B; --bad:#E4726B;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}   /* a hidden attribútum mindig győzzön (a display:flex fölött is) */
+body{margin:0; background:var(--korom); color:var(--text);
+  font-family:"Hanken Grotesk",system-ui,sans-serif; font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+h1,h2{font-family:"Fraunces",Georgia,serif; font-weight:900; letter-spacing:-.015em; margin:0}
+a{color:var(--lang)}
+.wrap{max-width:1500px; margin:0 auto; padding:0 22px}
+.btn{font-family:"Hanken Grotesk"; font-weight:700; font-size:14px; cursor:pointer;
+  padding:9px 15px; border-radius:999px; border:1px solid transparent;
+  color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs))}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn.ghost{background:transparent; border:1px solid var(--line); color:var(--text)}
+.btn.ghost:hover{border-color:var(--parazs); color:var(--izzas)}
+.btn.sm{padding:6px 11px; font-size:12.5px}
+.form-err{color:var(--bad); font-size:13.5px; margin:2px 0 0}
+.status{color:var(--hamu); font-family:"Space Mono",monospace; font-size:14px}
+
+/* ---- Bejelentkezés ---- */
+.login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px}
+.login-card{width:100%; max-width:380px; background:var(--korom-2); border:1px solid var(--line);
+  border-radius:18px; padding:32px 28px; display:flex; flex-direction:column; gap:12px}
+.login-card .brand{display:flex; align-items:center; gap:9px; font-family:"Fraunces"; font-weight:900; font-size:18px}
+.login-card .flame{width:18px; height:22px}
+.login-card h1{font-size:26px; margin:4px 0 8px}
+.login-card label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600}
+.login-card input{font-family:inherit; font-size:15px; color:var(--text);
+  background:var(--brick); border:1px solid var(--line); border-radius:10px; padding:11px 13px}
+.login-card input:focus{outline:none; border-color:var(--parazs)}
+.login-card .btn{margin-top:8px; justify-content:center; width:100%; padding:12px}
+
+/* ---- Fejléc ---- */
+.admin-header{border-bottom:1px solid var(--line); background:var(--korom-2)}
+.admin-header .wrap{display:flex; align-items:center; justify-content:space-between; height:62px}
+.admin-header .brand{display:flex; align-items:center; gap:9px; font-family:"Fraunces"; font-weight:900; font-size:18px}
+.admin-header .flame{width:18px; height:22px}
+.admin-header .right{display:flex; align-items:center; gap:14px}
+.admin-header #whoami{font-family:"Space Mono",monospace; font-size:12.5px; color:var(--hamu-2)}
+
+main.wrap{padding:34px 22px 70px}
+main h2{font-size:28px; margin:0 0 18px}
+
+/* ---- Fülek ---- */
+.tabs{display:flex; gap:4px; margin:0 0 24px; border-bottom:1px solid var(--line)}
+.tab{font-family:"Hanken Grotesk"; font-weight:700; font-size:15px; cursor:pointer; color:var(--hamu);
+  background:none; border:0; padding:11px 16px; border-bottom:2px solid transparent; margin-bottom:-1px}
+.tab.active{color:var(--izzas); border-bottom-color:var(--parazs)}
+.tab:hover{color:var(--text)}
+.tab-panel[hidden]{display:none}
+
+/* ---- Beállítás-kártyák ---- */
+.beall-card{background:var(--korom-2); border:1px solid var(--line); border-radius:14px;
+  padding:22px 22px; margin-bottom:20px; max-width:720px}
+.beall-card h3{font-family:"Fraunces"; font-weight:900; font-size:21px; margin:0 0 14px}
+.beall-card label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600; margin-bottom:14px}
+.beall-card label small{color:var(--hamu-2); font-weight:400}
+.beall-card input,.beall-card textarea{font-family:"Hanken Grotesk"; font-size:15px; color:var(--text);
+  background:var(--brick); border:1px solid var(--line); border-radius:9px; padding:10px 12px}
+.beall-card input:focus,.beall-card textarea:focus{outline:none; border-color:var(--parazs)}
+.beall-card .ket-mezo{display:flex; gap:16px; flex-wrap:wrap}
+.beall-card .ket-mezo label{flex:1; min-width:160px}
+.beall-card .preview{font-size:14px; color:var(--hamu); margin:2px 0 14px}
+.beall-card .preview b{font-family:"Space Mono",monospace; color:var(--lang); font-size:16px}
+.beall-card .hint{font-size:13px; color:var(--hamu-2); margin:0 0 16px}
+.beall-card .hint code{background:var(--brick); border:1px solid var(--line); border-radius:5px; padding:1px 5px; color:var(--lang); font-size:12px}
+.beall-foot{display:flex; align-items:center; gap:12px}
+.mentve{font-family:"Space Mono",monospace; font-size:12.5px; color:var(--ok)}
+.sablon-form{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.sablon-form:first-child{border-top:0; padding-top:0; margin-top:0}
+.sablon-form h4{font-family:"Fraunces"; font-weight:900; font-size:17px; margin:0 0 12px; color:var(--izzas)}
+
+/* ---- Szerkesztő ablak (modal) ---- */
+.modal{position:fixed; inset:0; z-index:100; display:flex; align-items:flex-start; justify-content:center;
+  padding:5vh 20px; background:rgba(10,7,4,.72); backdrop-filter:blur(4px); overflow:auto}
+.modal[hidden]{display:none !important}
+.modal-card{position:relative; width:100%; max-width:520px; background:var(--korom-2);
+  border:1px solid var(--line); border-radius:20px; padding:28px 26px; box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
+.modal-close{position:absolute; top:14px; right:16px; width:34px; height:34px; border-radius:50%;
+  border:1px solid var(--line); background:var(--brick); color:var(--hamu); font-size:20px; cursor:pointer; line-height:1}
+.modal-close:hover{color:var(--izzas); border-color:var(--parazs)}
+.m-title{font-family:"Fraunces"; font-weight:900; font-size:24px; margin:2px 0 18px}
+.modal-lg{max-width:920px}
+/* rich text szerkesztő (félkövér/dőlt/felsorolás a leírásokhoz) */
+.mezo{display:flex; flex-direction:column; gap:5px}
+.mezo-cimke{font-size:13px; color:var(--hamu); font-weight:600}
+.rte{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--brick)}
+.rte-tb{display:flex; gap:5px; padding:6px 8px; border-bottom:1px solid var(--line); background:var(--korom-2)}
+.rte-b{min-width:30px; height:28px; padding:0 8px; border:1px solid var(--line); border-radius:6px;
+  background:var(--brick); color:var(--text); cursor:pointer; font-size:13.5px; line-height:1}
+.rte-b:hover{border-color:var(--parazs); color:var(--izzas)}
+.rte-ed{min-height:64px; padding:10px 12px; color:var(--text); font-size:15px; line-height:1.55; outline:none}
+.rte-ed.rte-nagy{min-height:180px}
+.rte-ed:focus{background:var(--brick-2)}
+.rte-ed:empty:before{content:attr(data-ph); color:var(--hamu-2)}
+.rte-ed ul{margin:6px 0 6px 22px} .rte-ed p{margin:0 0 6px}
+.mform{display:flex; flex-direction:column; gap:14px}
+.mform label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600}
+.mform label small{color:var(--hamu-2); font-weight:400}
+.mform .ket-mezo{display:flex; gap:14px; flex-wrap:wrap}
+.mform .ket-mezo label{flex:1; min-width:150px}
+.mform input,.mform select,.mform textarea{font-family:"Hanken Grotesk"; font-size:15px; color:var(--text);
+  background:var(--brick); border:1px solid var(--line); border-radius:9px; padding:10px 12px}
+.mform input:focus,.mform select:focus,.mform textarea:focus{outline:none; border-color:var(--parazs)}
+.mform .form-err{color:var(--bad); font-size:13.5px; margin:0}
+.foto-elonezet img{max-width:100%; max-height:180px; border-radius:10px; border:1px solid var(--line); margin-top:2px}
+
+/* ---- Programok fül ---- */
+.prog-fejlec{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px}
+.altabs{display:flex; gap:4px}
+.altab{font-family:"Hanken Grotesk"; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--hamu);
+  background:var(--brick); border:1px solid var(--line); border-radius:999px; padding:7px 14px}
+.altab.active{color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs)); border-color:transparent}
+.altab:hover:not(.active){color:var(--izzas)}
+.altab .db{font-weight:400; opacity:.75; margin-left:1px}
+.foglalas-fulek{margin-bottom:18px; flex-wrap:wrap}
+.prog-lista{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px}
+.prog-kartya{background:var(--korom-2); border:1px solid var(--line); border-radius:14px; padding:18px; display:flex; flex-direction:column}
+.prog-kartya .fej{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px}
+.prog-kartya h4{font-family:"Fraunces"; font-weight:900; font-size:19px; margin:0; color:var(--izzas)}
+.prog-kartya .datum{font-family:"Space Mono",monospace; font-size:12px; color:var(--hamu); margin-bottom:8px}
+.prog-kartya .leiras{font-size:13.5px; color:var(--hamu); margin:0 0 12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.prog-kartya .also{display:flex; justify-content:space-between; align-items:baseline; margin-top:auto; padding-top:12px; border-top:1px solid var(--line)}
+.prog-kartya .arak{font-family:"Fraunces"; font-weight:900; font-size:17px}
+.prog-kartya .arak .old{font-family:"Hanken Grotesk"; font-weight:500; font-size:12px; color:var(--hamu-2); text-decoration:line-through; margin-right:6px}
+.prog-kartya .arak .sale{color:var(--lang-2)}
+.prog-kartya .helyek{font-family:"Space Mono",monospace; font-size:12px; color:var(--hamu)}
+.prog-kartya .gombok{display:flex; gap:6px; margin-top:12px}
+.prog-badge{font-family:"Space Mono",monospace; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:4px 8px; border-radius:999px; white-space:nowrap}
+.prog-badge.soon{color:var(--lang); border:1px solid var(--lang)}
+.prog-badge.aktiv{color:var(--ok); border:1px solid rgba(47,163,90,.5)}
+.prog-badge.elmaradt{color:#C4A6E8; border:1px solid rgba(168,130,220,.5)}
+.prog-badge.arch{color:var(--hamu); border:1px solid var(--line)}
+
+/* ---- Szűrősáv ---- */
+.filterbar{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px}
+.export-gombok{margin-left:auto; display:flex; gap:8px; align-self:flex-end}
+@media(max-width:560px){ .export-gombok{width:100%; margin-left:0} .export-gombok .btn{flex:1} }
+.filterbar label{display:flex; flex-direction:column; gap:5px; font-family:"Space Mono",monospace;
+  font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--hamu-2)}
+.filterbar select,.filterbar input{font-family:"Hanken Grotesk"; font-size:14.5px; color:var(--text);
+  background:var(--brick); border:1px solid var(--line); border-radius:9px; padding:9px 12px; min-width:190px}
+.filterbar select:focus,.filterbar input:focus{outline:none; border-color:var(--parazs)}
+@media(max-width:560px){ .filterbar label,.filterbar select,.filterbar input{width:100%; min-width:0} }
+
+/* ---- Foglalás-táblázat ---- */
+.tbl{width:100%; border-collapse:collapse; font-size:14.5px}
+.tbl th,.tbl td{text-align:left; padding:12px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+.tbl thead th{font-family:"Space Mono",monospace; font-size:11px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--hamu-2)}
+.tbl tbody tr:hover{background:var(--korom-2)}
+.tbl .azon{font-family:"Space Mono",monospace; font-weight:700; color:var(--lang); white-space:nowrap}
+.tbl .prog b{color:var(--izzas)}
+.tbl .prog small{display:block; font-family:"Space Mono",monospace; font-size:11.5px; color:var(--hamu)}
+.tbl .kontakt small{display:block; color:var(--hamu); font-size:12.5px}
+.loglink{display:inline-block; margin-top:6px; padding:0; background:none; border:0; cursor:pointer;
+  font-family:"Space Mono",monospace; font-size:11.5px; color:var(--lang); text-decoration:underline dotted}
+.loglink:hover{color:var(--izzas)}
+.megj-cella{text-align:center}
+.megj-ikon{background:none; border:0; cursor:pointer; font-size:15px; padding:2px 4px; line-height:1; border-radius:6px}
+.megj-ikon:hover{background:var(--brick)}
+.tbl .actions{display:flex; gap:6px; flex-wrap:nowrap}
+.tbl td[data-cim="Művelet"]{white-space:nowrap}
+.tbl .btn.sm{white-space:nowrap}
+.jelentes-sor{display:flex; justify-content:flex-end; margin:0 0 8px}
+
+/* státusz-jelvények */
+.pill{display:inline-block; font-family:"Space Mono",monospace; font-size:11px; font-weight:700;
+  padding:4px 9px; border-radius:999px; white-space:nowrap}
+.pill.o{background:rgba(232,149,43,.16); color:var(--warn); border:1px solid rgba(232,149,43,.4)}
+.pill.g{background:rgba(47,163,90,.16); color:var(--ok); border:1px solid rgba(47,163,90,.4)}
+.pill.r{background:rgba(228,114,107,.16); color:var(--bad); border:1px solid rgba(228,114,107,.4)}
+.pill.x{background:rgba(180,158,134,.14); color:var(--hamu); border:1px solid var(--line)}
+.pill.e{background:rgba(168,130,220,.15); color:#C4A6E8; border:1px solid rgba(168,130,220,.45)}
+.arch-jel{display:inline-block; font-family:"Space Mono",monospace; font-size:9.5px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--hamu-2); border:1px solid var(--line); border-radius:999px; padding:2px 6px; vertical-align:middle}
+.arch-jel.elmaradt{color:#C4A6E8; border-color:rgba(168,130,220,.5)}
+.pill2{display:inline-block; font-family:"Space Mono",monospace; font-size:10.5px; color:var(--hamu-2); margin-top:4px}
+.pill2.today{color:var(--lang)}
+/* időállapot jelvények — logikus színekkel */
+.ido{display:inline-block; font-family:"Space Mono",monospace; font-size:11px; font-weight:700; padding:4px 9px; border-radius:999px; white-space:nowrap}
+.ido.kozeledo{background:rgba(96,165,250,.14); color:#93C5FD; border:1px solid rgba(96,165,250,.4)}
+.ido.ma{background:rgba(245,158,11,.16); color:var(--lang-2); border:1px solid rgba(245,158,11,.5)}
+.ido.multbeli{background:rgba(180,158,134,.12); color:var(--hamu); border:1px solid var(--line)}
+
+@media(max-width:820px){
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block; width:100%}
+  .tbl tr{border-bottom:1px solid var(--line); padding:12px 0}
+  .tbl td{border:0; padding:3px 0}
+  .tbl .actions{flex-wrap:wrap}   /* mobilon törhet a sok gomb */
+  .tbl td::before{content:attr(data-cim); font-family:"Space Mono",monospace; font-size:10.5px;
+    text-transform:uppercase; letter-spacing:.08em; color:var(--hamu-2); display:block; margin-bottom:2px}
+}
+
+/* ---- Naptár ---- */
+.naptar-fejlec{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px}
+.ho-lepto{display:flex; align-items:center; gap:8px}
+.ho-lepto h3{margin:0; min-width:96px; text-align:center; font-family:"Fraunces",serif; font-weight:900; font-size:22px}
+.naptar-ossz{color:var(--hamu); font-size:14px}
+.naptar-ossz b{color:var(--izzas)}
+
+/* Éves nézet: 12 hónap-kártya */
+.naptar-ev{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px}
+.ev-honap{background:var(--korom-2); border:1px solid var(--line); border-radius:12px; padding:12px 14px; min-height:92px}
+.ev-honap.ures{opacity:.5}
+.ev-honap.most{border-color:var(--lang); box-shadow:0 0 0 1px var(--lang) inset}
+.ev-honap h4{margin:0 0 8px; font-family:"Fraunces",serif; font-weight:900; font-size:16px}
+.ev-honap.most h4{color:var(--lang)}
+.ev-proglista{display:flex; flex-direction:column; gap:6px}
+.ev-nincs{font-family:"Space Mono",monospace; font-size:11.5px; color:var(--hamu-2)}
+.ev-prog{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; width:100%;
+  text-align:left; border:1px solid transparent; border-radius:8px; padding:6px 9px; cursor:pointer;
+  font-family:inherit; color:var(--text); background:var(--brick); transition:filter .12s}
+.ev-prog:hover{filter:brightness(1.2)}
+.ev-nap{font-family:"Space Mono",monospace; font-size:12px; font-weight:700; color:var(--hamu)}
+.ev-cim{font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.ev-ar{font-family:"Space Mono",monospace; font-size:12px; font-weight:700; white-space:nowrap}
+.ev-prog.fill-ures{background:rgba(180,158,134,.14)}
+.ev-prog.fill-ok{background:rgba(47,163,90,.20); border-color:rgba(47,163,90,.4)}
+.ev-prog.fill-majdnem{background:rgba(232,149,43,.20); border-color:rgba(232,149,43,.45)}
+.ev-prog.fill-tele{background:rgba(228,114,107,.22); border-color:rgba(228,114,107,.5)}
+.ev-prog.fill-nincsmax{background:rgba(180,158,134,.14)}
+.ev-prog.elmarad{opacity:.55; text-decoration:line-through}
+
+.naptar-reszletek{margin-top:24px}
+.naptar-reszletek:empty{display:none}
+.reszlet-fej{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  border-top:1px solid var(--line); padding-top:20px}
+.reszlet-fej h3{margin:0; font-family:"Fraunces",serif; font-weight:900}
+.reszlet-meta{font-family:"Space Mono",monospace; font-size:12.5px; color:var(--hamu)}
+.reszlet-szamok{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0}
+.szam-kartya{background:var(--korom-2); border:1px solid var(--line); border-radius:10px;
+  padding:10px 14px; min-width:104px}
+.szam-kartya b{display:block; font-family:"Fraunces",serif; font-size:23px; color:var(--izzas); line-height:1.1}
+.szam-kartya span{font-size:11.5px; color:var(--hamu-2)}
+.reszlet-tabla td.kozep, .reszlet-tabla th:nth-child(3){text-align:center}
+.reszlet-tabla .kontakt small{display:block; color:var(--hamu); font-size:12.5px}
+.halvany{color:var(--hamu)}
+.level-cimzett{margin:0 0 4px; color:var(--hamu); font-size:14px}
+.level-cimzett b{color:var(--izzas)}
+
+@media(max-width:820px){
+  .naptar-ev{grid-template-columns:1fr}
+}

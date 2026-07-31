@@ -1,0 +1,10 @@
+# ===== Titkok - SOHA ne kerüljenek a repóba =====
+*.txt
+*.env
+secrets/
+
+# ===== Rendszer / szerkesztő =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
