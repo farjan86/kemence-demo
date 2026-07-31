@@ -1,0 +1,9 @@
+{
+  // Statikus oldal Cloudflare Workers-en (assets-only, nincs Worker-kod).
+  // A "name" egyezzen a Cloudflare-ben letrehozott Worker nevevel.
+  "name": "kemence-demo",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "."
+  }
+}

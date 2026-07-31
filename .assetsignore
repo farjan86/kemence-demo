@@ -1,0 +1,5 @@
+*.bat
+*.md
+.gitignore
+.assetsignore
+wrangler.jsonc
