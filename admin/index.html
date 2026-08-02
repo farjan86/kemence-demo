@@ -84,10 +84,10 @@
     <section class="tab-panel" data-panel="naptar" hidden>
       <div class="naptar-fejlec">
         <div class="ho-lepto">
-          <button class="btn ghost sm" id="hoElozo" aria-label="Előző év">‹</button>
+          <button class="btn ghost sm" id="hoElozo" aria-label="Előző">‹</button>
           <h3 id="hoCimke">—</h3>
-          <button class="btn ghost sm" id="hoKovetkezo" aria-label="Következő év">›</button>
-          <button class="btn ghost sm" id="hoMa">Idén</button>
+          <button class="btn ghost sm" id="hoKovetkezo" aria-label="Következő">›</button>
+          <button class="btn ghost sm" id="hoMa">Ma</button>
         </div>
         <div class="naptar-ossz" id="naptarOssz"></div>
       </div>
@@ -117,6 +117,12 @@
         </label>
         <label>Foglalási info-sáv <small>(a foglalási űrlapon jelenik meg)</small>
           <textarea name="foglalas_infosav" rows="3"></textarea>
+        </label>
+        <label>Naptár megjelenítése <small>(az admin Naptár fülén)</small>
+          <select name="naptar_nezet">
+            <option value="lista">Lista (hónaponként a programok)</option>
+            <option value="racs">Normál naptár (hónaprács a napokkal)</option>
+          </select>
         </label>
         <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
       </form>

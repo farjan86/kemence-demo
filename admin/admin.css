@@ -244,6 +244,87 @@ main h2{font-size:28px; margin:0 0 18px}
 .szam-kartya span{font-size:11.5px; color:var(--hamu-2)}
 .reszlet-tabla td.kozep, .reszlet-tabla th:nth-child(3){text-align:center}
 .reszlet-tabla .kontakt small{display:block; color:var(--hamu); font-size:12.5px}
+
+/* Beállítások-select (naptár nézet) */
+.beall-card select{font-family:"Hanken Grotesk"; font-size:14.5px; color:var(--text);
+  background:var(--brick); border:1px solid var(--line); border-radius:8px; padding:9px 11px}
+.beall-card select:focus{outline:none; border-color:var(--parazs)}
+
+/* ===== NORMÁL NAPTÁR — nagy, látványos hónap-kártya ===== */
+.honap-nagy{position:relative; overflow:hidden;
+  background:
+    radial-gradient(130% 90% at 100% -10%, rgba(228,87,27,.18), transparent 52%),
+    linear-gradient(180deg, var(--brick-2), var(--korom));
+  border:1px solid var(--line); border-radius:22px; padding:0 0 20px;
+  box-shadow:0 34px 80px -40px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.05)}
+
+/* cím-sáv a kártya tetején: nagy hónapnév + év + jelmagyarázat */
+.hn-cim{display:flex; justify-content:space-between; align-items:flex-end; gap:18px; flex-wrap:wrap;
+  padding:22px 24px 16px; border-bottom:1px solid var(--line)}
+.hn-cim-fo{display:flex; align-items:baseline; gap:12px}
+.hn-honap{font-family:"Fraunces",serif; font-weight:900; font-size:36px; line-height:.95;
+  color:var(--izzas); letter-spacing:-.015em; text-transform:capitalize}
+.hn-ev{font-family:"Space Mono",monospace; font-size:17px; color:var(--parazs); font-weight:700}
+.hn-jelmagy{display:flex; gap:16px; align-items:center}
+.jm{font-size:11.5px; color:var(--hamu); display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
+.jm::before{content:""; width:11px; height:11px; border-radius:3px; display:inline-block}
+.jm-prog::before{background:linear-gradient(180deg, var(--lang-2), var(--parazs))}
+.jm-unnep::before{background:rgba(198,58,46,.8)}
+.jm-hetv::before{background:rgba(96,132,176,.55)}
+
+.hn-fej{display:grid; grid-template-columns:repeat(7,1fr); gap:9px; padding:16px 20px 9px}
+.hn-fej span{text-align:center; font-family:"Space Mono",monospace; font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--hamu-2); font-weight:700}
+.hn-fej span:nth-child(6),.hn-fej span:nth-child(7){color:#8fb0d8}   /* hétvége fejléc */
+
+.hn-racs{display:grid; grid-template-columns:repeat(7,1fr); gap:9px; padding:0 20px}
+.hn-nap{position:relative; min-height:116px; background:rgba(255,255,255,.022);
+  border:1px solid var(--line); border-radius:14px; padding:8px 8px 9px;
+  display:flex; flex-direction:column; gap:4px;
+  transition:border-color .18s, background .18s, transform .18s, box-shadow .18s}
+.hn-nap:not(.hn-kivul):hover{border-color:#7a5330; background:rgba(255,255,255,.05);
+  transform:translateY(-2px); box-shadow:0 14px 26px -18px rgba(0,0,0,.8)}
+.hn-nap.hn-kivul{background:transparent; border-color:transparent; opacity:.3; pointer-events:none}
+.hn-nap.hn-kivul .hn-datum{color:var(--hamu-2); font-weight:600}
+
+/* hétvége — hűvösebb, elkülönülő háttér */
+.hn-nap.hn-hetvege{background:rgba(96,132,176,.08)}
+/* ünnep- és munkaszüneti nap — pirosas háttér + felirat (hétvégét felülírja) */
+.hn-nap.hn-unnep{background:rgba(198,58,46,.15); border-color:rgba(198,58,46,.4)}
+.hn-nap.hn-unnep .hn-datum{color:#f0a89e}
+.hn-unnep-nev{font-family:"Space Mono",monospace; font-size:9.5px; font-weight:700; letter-spacing:.02em;
+  text-transform:uppercase; color:#ed8a7d; line-height:1.15; word-break:break-word; padding:0 2px}
+
+.hn-datum{font-size:13px; color:var(--hamu); font-weight:700; align-self:flex-start; padding:1px 3px; line-height:1}
+.hn-nap.hn-ma{border-color:var(--lang-2);
+  box-shadow:inset 0 0 0 1px var(--lang-2), 0 0 30px -6px rgba(245,158,11,.6)}
+.hn-nap.hn-ma .hn-datum{background:linear-gradient(180deg, var(--lang-2), var(--parazs)); color:#231206;
+  min-width:23px; height:23px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0}
+
+.hn-prog{display:flex; flex-direction:column; align-items:flex-start; gap:1px; text-align:left; position:relative;
+  border:0; cursor:pointer; border-radius:9px; padding:5px 8px 5px 12px; overflow:hidden; color:var(--izzas);
+  background:linear-gradient(180deg, rgba(228,87,27,.32), rgba(228,87,27,.15));
+  box-shadow:0 3px 10px -6px rgba(0,0,0,.6); transition:transform .15s, box-shadow .15s}
+.hn-prog::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:linear-gradient(180deg, var(--lang-2), var(--parazs))}
+.hn-prog:hover{transform:translateY(-1px); box-shadow:0 8px 18px -7px rgba(228,87,27,.6); color:#fff}
+/* telítettség szerinti szín a chip-en (majdnem tele = borostyán, tele = pijust) */
+.hn-prog.fill-majdnem{background:linear-gradient(180deg, rgba(232,149,43,.32), rgba(232,149,43,.14))}
+.hn-prog.fill-majdnem::before{background:linear-gradient(180deg, #ffd27a, var(--lang))}
+.hn-prog.fill-tele{background:linear-gradient(180deg, rgba(228,114,107,.34), rgba(228,114,107,.15))}
+.hn-prog.fill-tele::before{background:linear-gradient(180deg, #ff9d94, #d64a3d)}
+.hn-prog.elmarad{text-decoration:line-through; opacity:.55}
+.hn-prog.elmarad::before{background:var(--hamu-2)}
+.hn-prog-cim{font-size:12px; font-weight:700; line-height:1.2; word-break:break-word}
+.hn-prog-hely{font-family:"Space Mono",monospace; font-size:10.5px; opacity:.85}
+
+@media(max-width:700px){
+  .honap-nagy{border-radius:16px}
+  .hn-cim{padding:16px 14px 12px} .hn-honap{font-size:27px}
+  .hn-jelmagy{display:none}
+  .hn-fej{padding:12px 12px 6px; gap:6px} .hn-racs{padding:0 12px; gap:6px}
+  .hn-nap{min-height:84px; border-radius:11px} .hn-prog-cim{font-size:11px}
+}
 .halvany{color:var(--hamu)}
 .level-cimzett{margin:0 0 4px; color:var(--hamu); font-size:14px}
 .level-cimzett b{color:var(--izzas)}

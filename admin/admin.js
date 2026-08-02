@@ -46,6 +46,7 @@ function muveletek(statusz){
 
 // Azonosító-formátum (a settingsből): elotag + (belső sorszám + kezdő - 1)
 let beall = { azonosito_elotag: "F-", azonosito_kezdo: 100 };
+let naptarNezet = "lista";   // admin naptár nézet: 'lista' vagy 'racs' (a settings-ből)
 function azon(azonosito){
   return beall.azonosito_elotag + (Number(azonosito) + Number(beall.azonosito_kezdo) - 1);
 }
@@ -160,10 +161,11 @@ async function betoltProgramok(){
 // Beállítások (azonosító-formátum) betöltése
 async function betoltBeallitasok(){
   const { data } = await db.from("settings")
-    .select("azonosito_elotag, azonosito_kezdo").eq("id", 1).maybeSingle();
+    .select("azonosito_elotag, azonosito_kezdo, naptar_nezet").eq("id", 1).maybeSingle();
   if(data){
     beall.azonosito_elotag = data.azonosito_elotag ?? "F-";
     beall.azonosito_kezdo  = data.azonosito_kezdo ?? 100;
+    naptarNezet = data.naptar_nezet ?? "lista";
   }
 }
 
@@ -610,6 +612,7 @@ async function betoltBeallitasokUrlap(){
   const fA = document.getElementById("formAltalanos");
   fA.levelezesi_email.value = data.levelezesi_email ?? "";
   fA.foglalas_infosav.value = data.foglalas_infosav ?? "";
+  fA.naptar_nezet.value     = data.naptar_nezet ?? "lista";
   fZ.azonosito_elotag.value = data.azonosito_elotag ?? "F-";
   fZ.azonosito_kezdo.value  = data.azonosito_kezdo ?? 100;
   azonPreview();
@@ -622,8 +625,10 @@ document.getElementById("formAltalanos").addEventListener("submit", async e => {
   const { error } = await db.from("settings").update({
     levelezesi_email: f.levelezesi_email.value.trim() || null,
     foglalas_infosav: f.foglalas_infosav.value.trim() || null,
+    naptar_nezet: f.naptar_nezet.value,
     updated_at: new Date().toISOString(),
   }).eq("id", 1);
+  if(!error){ naptarNezet = f.naptar_nezet.value; if(naptarEv !== null) renderNaptar(); }
   mentesVisszajelzes(f, error);
 });
 
@@ -1026,6 +1031,7 @@ document.getElementById("pMegse").addEventListener("click", zarProgModal);
 
 // ===================== NAPTÁR fül (éves nézet — 12 hónap-kártya) =====================
 let naptarEv = null;                    // az épp mutatott naptári év
+let naptarHo = null;                    // az épp mutatott hónap (0-11) a rács-nézethez
 let naptarProgramok = [];               // a workshopok (idoponttal)
 let naptarKivalasztott = null;          // a lenyitott program id-je
 
@@ -1066,19 +1072,29 @@ async function betoltNaptar(){
     .not("idopont", "is", null)
     .order("idopont", { ascending: true });
   naptarProgramok = ws || [];
-  if(naptarEv === null) naptarEv = new Date().getFullYear();
+  const most0 = new Date();
+  if(naptarEv === null) naptarEv = most0.getFullYear();
+  if(naptarHo === null) naptarHo = most0.getMonth();
   renderNaptar();
 }
 
 function lepEv(delta){
-  naptarEv += delta;
+  if(naptarNezet === "racs"){                 // rács-nézetben HÓNAP-ról hónapra lapozunk
+    const m = naptarHo + delta;
+    naptarEv += Math.floor(m / 12);
+    naptarHo  = ((m % 12) + 12) % 12;
+  } else {                                     // lista-nézetben évről évre
+    naptarEv += delta;
+  }
   naptarKivalasztott = null;
   document.getElementById("naptarReszletek").innerHTML = "";
   renderNaptar();
 }
 
 function renderNaptar(){
-  document.getElementById("hoCimke").textContent = `${naptarEv}`;
+  document.getElementById("hoCimke").textContent = (naptarNezet === "racs")
+    ? `${naptarEv}. ${HO_NEVEK[naptarHo]}`
+    : `${naptarEv}`;
 
   // Az évi programok hónapokra bontva (0–11) + évi összesítő
   const honapok = Array.from({ length:12 }, () => []);
@@ -1100,6 +1116,26 @@ function renderNaptar(){
   const most = new Date();
   const maHo = (most.getFullYear() === naptarEv) ? most.getMonth() : -1;
 
+  const html = (naptarNezet === "racs")
+    ? naptarHonapHtml(honapok[naptarHo])
+    : naptarListaHtml(honapok, maHo);
+  document.getElementById("naptarRacs").innerHTML = html;
+
+  document.querySelectorAll("#naptarRacs .ev-prog, #naptarRacs .hn-prog").forEach(ch =>
+    ch.addEventListener("click", () => nyitNaptarProgram(ch.dataset.wid)));
+
+  // Ha volt kiválasztott program és még ebben az évben van, tartsuk nyitva; különben zárjuk
+  const kivProg = naptarProgramok.find(x => x.id === naptarKivalasztott);
+  if(kivProg && new Date(kivProg.idopont).getFullYear() === naptarEv){
+    nyitNaptarProgram(naptarKivalasztott);
+  } else {
+    naptarKivalasztott = null;
+    document.getElementById("naptarReszletek").innerHTML = "";
+  }
+}
+
+// LISTA nézet: 12 hónap, benne a programok listája
+function naptarListaHtml(honapok, maHo){
   let html = `<div class="naptar-ev">`;
   for(let ho = 0; ho < 12; ho++){
     const progs = honapok[ho];
@@ -1122,20 +1158,86 @@ function renderNaptar(){
       <div class="ev-proglista">${sorok}</div>
     </div>`;
   }
-  html += `</div>`;
-  document.getElementById("naptarRacs").innerHTML = html;
+  return html + `</div>`;
+}
 
-  document.querySelectorAll("#naptarRacs .ev-prog").forEach(ch =>
-    ch.addEventListener("click", () => nyitNaptarProgram(ch.dataset.wid)));
+// NORMÁL NAPTÁR nézet: egy NAGY hónap-kártya (naptarEv/naptarHo) a napokkal,
+// a napokba beírva a programnevek + foglalt/max hely. Hétfő-első.
+// Magyar ünnep- és munkaszüneti napok (fix + húsvét-alapúak) — "hónap0-nap" kulcsok halmaza
+function husvetVasarnap(ev){
+  const a = ev % 19, b = Math.floor(ev / 100), c = ev % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3), h = (19*a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2*e + 2*i - h - k) % 7;
+  const m = Math.floor((a + 11*h + 22*l) / 451);
+  const ho = Math.floor((h + l - 7*m + 114) / 31), nap = ((h + l - 7*m + 114) % 31) + 1;
+  return new Date(ev, ho - 1, nap);
+}
+function unnepnapok(ev){
+  const m = new Map([          // fix ünnepek: "hónap0-nap" → név
+    ["0-1", "Újév"], ["2-15", "Nemzeti ünnep"], ["4-1", "Munka ünnepe"],
+    ["7-20", "Államalapítás"], ["9-23", "Nemzeti ünnep"], ["10-1", "Mindenszentek"],
+    ["11-25", "Karácsony"], ["11-26", "Karácsony 2."],
+  ]);
+  const h = husvetVasarnap(ev);
+  const kulcs = dt => `${dt.getMonth()}-${dt.getDate()}`;
+  const eltol = n => { const dt = new Date(h); dt.setDate(dt.getDate() + n); return kulcs(dt); };
+  m.set(eltol(-2), "Nagypéntek");
+  m.set(kulcs(h), "Húsvét");
+  m.set(eltol(1), "Húsvéthétfő");
+  m.set(eltol(49), "Pünkösd");
+  m.set(eltol(50), "Pünkösdhétfő");
+  return m;
+}
 
-  // Ha volt kiválasztott program és még ebben az évben van, tartsuk nyitva; különben zárjuk
-  const kivProg = naptarProgramok.find(x => x.id === naptarKivalasztott);
-  if(kivProg && new Date(kivProg.idopont).getFullYear() === naptarEv){
-    nyitNaptarProgram(naptarKivalasztott);
-  } else {
-    naptarKivalasztott = null;
-    document.getElementById("naptarReszletek").innerHTML = "";
+const NAP_FEJ = ["H", "K", "Sze", "Cs", "P", "Szo", "V"];
+function naptarHonapHtml(monthProgs){
+  const napMap = {};   // nap -> az adott napi program(ok)
+  (monthProgs || []).forEach(r => {
+    const nap = new Date(r.p.idopont).getDate();
+    (napMap[nap] || (napMap[nap] = [])).push(r);
+  });
+  const most = new Date();
+  const unnepek = unnepnapok(naptarEv);
+  const kezdo = (new Date(naptarEv, naptarHo, 1).getDay() + 6) % 7;   // 0=Hétfő … 6=Vasárnap
+  const napokSzama = new Date(naptarEv, naptarHo + 1, 0).getDate();
+  const elozoOsszes = new Date(naptarEv, naptarHo, 0).getDate();      // előző hó napjainak száma
+
+  const kulso = n => `<div class="hn-nap hn-kivul"><span class="hn-datum">${n}</span></div>`;
+
+  let cellak = "";
+  for(let i = kezdo - 1; i >= 0; i--) cellak += kulso(elozoOsszes - i);   // előző hó vezető napjai (halvány)
+
+  for(let nap = 1; nap <= napokSzama; nap++){
+    const progs = napMap[nap];
+    const oszlop = (kezdo + nap - 1) % 7;                              // 0=Hétfő … 6=Vasárnap
+    const hetvege = (oszlop >= 5) ? " hn-hetvege" : "";
+    const ma = (naptarEv === most.getFullYear() && naptarHo === most.getMonth() && nap === most.getDate()) ? " hn-ma" : "";
+    const unnepNev = unnepek.get(`${naptarHo}-${nap}`);
+    const unnep = unnepNev ? " hn-unnep" : "";
+    const unnepHtml = unnepNev ? `<span class="hn-unnep-nev">${unnepNev}</span>` : "";
+    const progHtml = progs ? progs.map(r => {
+      const szint = fillSzint(r.elo, r.max);
+      const elmarad = r.p.statusz === "elmaradt";
+      const hely = r.max ? `${r.elo}/${r.max}` : `${r.elo}`;
+      return `<button class="hn-prog fill-${szint}${elmarad ? " elmarad" : ""}" data-wid="${r.p.id}" title="${escapeHtml(r.p.cim)}">`
+        + `<span class="hn-prog-cim">${escapeHtml(r.p.cim)}</span>`
+        + `<span class="hn-prog-hely">${hely}</span></button>`;
+    }).join("") : "";
+    cellak += `<div class="hn-nap${hetvege}${ma}${unnep}"><span class="hn-datum">${nap}</span>${unnepHtml}${progHtml}</div>`;
   }
+
+  const zaro = (7 - ((kezdo + napokSzama) % 7)) % 7;                    // következő hó záró napjai (halvány)
+  for(let nap = 1; nap <= zaro; nap++) cellak += kulso(nap);
+
+  return `<div class="honap-nagy">
+    <div class="hn-cim">
+      <div class="hn-cim-fo"><span class="hn-honap">${HO_NEVEK[naptarHo]}</span><span class="hn-ev">${naptarEv}</span></div>
+      <div class="hn-jelmagy"><span class="jm jm-prog">Program</span><span class="jm jm-unnep">Ünnep</span><span class="jm jm-hetv">Hétvége</span></div>
+    </div>
+    <div class="hn-fej">${NAP_FEJ.map(n => `<span>${n}</span>`).join("")}</div>
+    <div class="hn-racs">${cellak}</div>
+  </div>`;
 }
 
 function nyitNaptarProgram(wid){
@@ -1252,7 +1354,9 @@ async function naptarJelentes(wid){
 document.getElementById("hoElozo").addEventListener("click", () => lepEv(-1));
 document.getElementById("hoKovetkezo").addEventListener("click", () => lepEv(1));
 document.getElementById("hoMa").addEventListener("click", () => {
-  naptarEv = new Date().getFullYear();
+  const most = new Date();
+  naptarEv = most.getFullYear();
+  naptarHo = most.getMonth();
   naptarKivalasztott = null;
   document.getElementById("naptarReszletek").innerHTML = "";
   renderNaptar();
