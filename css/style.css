@@ -8,6 +8,9 @@
   --maxw:1880px;
 }
 *{box-sizing:border-box}
+/* Az egész oldal alaphangolása: 100%-on a korábbi ~90%-os nézet arányai.
+   MOBILON (700px alatt) NINCS zoom — ott a natív méret a jó (különben apró a szöveg). */
+@media (min-width:700px){ html{zoom:.9} }
 body{margin:0; background:var(--korom); color:var(--text);
   font-family:"Hanken Grotesk",system-ui,sans-serif; font-size:17px; line-height:1.6;
   -webkit-font-smoothing:antialiased; overflow-x:hidden}
@@ -35,9 +38,11 @@ a{color:inherit; text-decoration:none}
 .status{color:var(--hamu); font-family:"Space Mono",monospace; font-size:14px}
 
 /* grid + cards */
-.courses-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; padding-bottom:70px}
-.card{position:relative; background:var(--brick); border:1px solid var(--line); border-radius:18px;
-  padding:24px; display:flex; flex-direction:column; overflow:hidden;
+/* Kitölti a sort; a 340px-es minimum miatt a max szélességű tartalomban (1880px) legfeljebb 5 fér egy sorba. */
+.courses-grid{display:grid; grid-template-columns:repeat(auto-fit,340px); justify-content:center; gap:16px;
+  padding-bottom:70px}
+.card{position:relative; background:var(--brick); border:1px solid var(--line); border-radius:14px;
+  padding:18px; display:flex; flex-direction:column; overflow:hidden;
   transition:transform .25s, border-color .25s, box-shadow .35s}
 .card::before{content:""; position:absolute; left:0; right:0; top:0; height:3px;
   background:linear-gradient(90deg,var(--parazs),var(--lang-2)); transform:scaleX(0); transform-origin:left; transition:transform .35s}
@@ -45,12 +50,12 @@ a{color:inherit; text-decoration:none}
   box-shadow:0 22px 46px -22px rgba(228,87,27,.55)}
 .card:hover::before{transform:scaleX(1)}
 .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px}
-.card h3{font-family:"Fraunces"; font-weight:900; font-size:30px; letter-spacing:-.02em; margin:0}
+.card h3{font-family:"Fraunces"; font-weight:900; font-size:25px; letter-spacing:-.02em; margin:0}
 .badge{font-family:"Space Mono",monospace; font-size:11.5px; font-weight:700; letter-spacing:.12em;
   text-transform:uppercase; padding:5px 9px; border-radius:999px; white-space:nowrap;
   border:1px solid var(--line); color:var(--hamu)}
 .badge.soon{color:var(--lang); border-color:var(--lang)}
-.card p.desc{color:var(--hamu); font-size:18.5px; margin:0 0 10px;
+.card p.desc{color:var(--hamu); font-size:17px; margin:0 0 10px;
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
 .reszlet-btn{align-self:flex-start; background:none; border:0; cursor:pointer; padding:0; margin:0 0 16px;
   font-family:"Space Mono",monospace; font-size:15px; color:var(--lang); text-decoration:underline dotted}
@@ -60,7 +65,7 @@ a{color:inherit; text-decoration:none}
 .reszlet-szoveg ul,.reszlet-szoveg ol{margin:0 0 12px 22px}
 .reszlet-szoveg li{margin:4px 0}
 .reszlet-szoveg strong,.reszlet-szoveg b{color:var(--izzas)}
-.card-kep{width:100%; height:170px; object-fit:cover; border-radius:10px; margin-bottom:14px; display:block; border:1px solid var(--line)}
+.card-kep{width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:10px; margin-bottom:12px; display:block; border:1px solid var(--line)}
 .meta{font-family:"Space Mono",monospace; font-size:15.5px; color:var(--hamu); margin-bottom:6px}
 .meta b{color:var(--izzas)}
 .seats{font-family:"Space Mono",monospace; font-size:15.5px; margin-bottom:14px}
@@ -78,8 +83,42 @@ a{color:inherit; text-decoration:none}
   color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs))}
 .btn:disabled{opacity:.4; cursor:not-allowed; filter:grayscale(.3)}
 
-@media(max-width:900px){ .courses-grid{grid-template-columns:repeat(2,1fr)} }
 @media(max-width:560px){ .courses-grid{grid-template-columns:1fr} }
+
+/* Egyedi programok — rács: akár 5 kártya/sor (a Workshopjaink csempék mintája),
+   a fix képablakot + kitöltést a .card-kep adja (aspect-ratio + object-fit:cover). */
+.ep-grid{display:grid; grid-template-columns:repeat(auto-fit, 340px); justify-content:center; gap:16px; padding-bottom:70px}
+@media(max-width:900px){ .ep-grid{grid-template-columns:repeat(2,1fr)} }
+@media(max-width:560px){ .ep-grid{grid-template-columns:1fr} }
+
+/* Egyedi programok — ajánlatkérő CTA a kártya alján */
+.ep-card .ep-cta{margin-top:auto; width:100%; text-align:center; font-size:16.5px; padding:13px 18px}
+
+/* előadó + „…Ft-tól" + időpont-csempék a programkártyán */
+.card .eloado{font-family:"Space Mono",monospace; font-size:14px; color:var(--hamu); margin:0 0 10px}
+.card .eloado b{color:var(--izzas)}
+.ar-tol{font-family:"Fraunces"; font-weight:900; font-size:23px; margin:2px 0 12px}
+.ar-tol small{font-family:"Space Mono",monospace; font-weight:400; font-size:12.5px; color:var(--hamu-2); letter-spacing:.04em}
+.idopont-cimke{font-family:"Space Mono",monospace; font-size:12px; font-weight:700; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--hamu-2); margin:0 0 10px}
+.idopont-lista{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:auto}
+.idopont-btn{display:flex; flex-direction:column; gap:3px; align-items:flex-start; text-align:left; cursor:pointer;
+  font:inherit; color:var(--text); background:var(--korom-2); border:1px solid var(--line); border-radius:12px; padding:10px 11px;
+  transition:border-color .2s, transform .2s, background .2s, box-shadow .3s}
+.idopont-btn:hover:not(:disabled){border-color:var(--parazs); transform:translateY(-2px); background:var(--brick-2);
+  box-shadow:0 14px 28px -18px rgba(228,87,27,.6)}
+.idopont-btn:disabled{opacity:.45; cursor:not-allowed}
+.i-datum{font-family:"Space Mono",monospace; font-size:13px; font-weight:700; color:var(--izzas)}
+.i-ar{font-family:"Fraunces"; font-weight:900; font-size:17px}
+.i-ar .old{font-family:"Hanken Grotesk"; font-weight:500; font-size:12px; color:var(--hamu-2); text-decoration:line-through; margin-right:6px}
+.i-ar .sale{color:var(--lang-2)}
+.i-hely{font-family:"Space Mono",monospace; font-size:12.5px}
+.i-hely.free{color:var(--lang)} .i-hely.full{color:#E4726B}
+/* átmeneti foglalás-szünet jelzése a kártyán */
+.szunet-sav{font-family:"Space Mono",monospace; font-size:12.5px; font-weight:700; letter-spacing:.02em;
+  color:var(--lang-2); background:rgba(245,158,11,.12); border:1px solid var(--lang);
+  border-radius:10px; padding:9px 12px; margin-top:8px; text-align:center}
+@media(max-width:560px){ .idopont-lista{grid-template-columns:1fr} }
 
 /* =========================== Foglalási ablak =========================== */
 .modal{position:fixed; inset:0; z-index:100; display:flex; align-items:flex-start; justify-content:center;
@@ -95,18 +134,20 @@ a{color:inherit; text-decoration:none}
 .m-title{font-family:"Fraunces"; font-weight:900; font-size:26px; margin:8px 0 4px}
 .m-meta{font-family:"Space Mono",monospace; font-size:12.5px; color:var(--hamu); margin:0 0 16px}
 .m-meta b{color:var(--izzas)}
+.csoportos-note{font-family:"Space Mono",monospace; font-size:12.5px; color:var(--lang-2);
+  background:rgba(245,158,11,.1); border:1px solid var(--lang); border-radius:8px; padding:8px 11px; margin:0 0 16px}
 .infobar{font-size:13.5px; color:var(--izzas); background:rgba(228,87,27,.1);
   border:1px solid var(--parazs); border-radius:10px; padding:12px 14px; margin-bottom:18px; line-height:1.45}
 
-#foglalasForm{display:flex; flex-direction:column; gap:12px}
-#foglalasForm label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600}
-#foglalasForm .opt{color:var(--hamu-2); font-weight:400}
-#foglalasForm input,#foglalasForm textarea{font-family:inherit; font-size:15px; color:var(--text);
-  background:var(--brick); border:1px solid var(--line); border-radius:10px; padding:11px 13px}
-#foglalasForm input:focus,#foglalasForm textarea:focus{outline:none; border-color:var(--parazs)}
-#foglalasForm input.bad,#foglalasForm textarea.bad{border-color:#E4726B}
+#foglalasForm,#ajanlatForm{display:flex; flex-direction:column; gap:12px}
+#foglalasForm label,#ajanlatForm label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600}
+#foglalasForm .opt,#ajanlatForm .opt{color:var(--hamu-2); font-weight:400}
+#foglalasForm input,#foglalasForm textarea,#ajanlatForm input,#ajanlatForm textarea{font-family:inherit; font-size:15px; color:var(--text);
+  background:var(--brick); border:1px solid var(--line); border-radius:10px; padding:11px 13px; color-scheme:dark}
+#foglalasForm input:focus,#foglalasForm textarea:focus,#ajanlatForm input:focus,#ajanlatForm textarea:focus{outline:none; border-color:var(--parazs)}
+#foglalasForm input.bad,#foglalasForm textarea.bad,#ajanlatForm input.bad,#ajanlatForm textarea.bad{border-color:#E4726B}
 .form-err{color:#E4726B; font-size:13.5px; margin:2px 0 0}
-#foglalasForm .btn{margin-top:6px; justify-content:center; width:100%; padding:13px}
+#foglalasForm .btn,#ajanlatForm .btn{margin-top:6px; justify-content:center; width:100%; padding:13px}
 .privacy{font-size:12px; color:var(--hamu-2); margin:10px 0 0; text-align:center}
 .privacy a{color:var(--lang)}
 
@@ -250,8 +291,13 @@ a.btn{display:inline-block; text-decoration:none}
 .about-cta{margin-top:16px}
 .about-photo{display:flex; flex-direction:column; margin:0}
 .about-photo img{width:100%; flex:1 1 auto; min-height:400px; object-fit:cover;
-  border-radius:16px; border:1px solid var(--line); display:block}
-.about-photo figcaption{font-family:"Space Mono",monospace; font-size:12px; color:var(--hamu-2); margin-top:10px}
+  border-radius:16px; display:block;
+  filter:sepia(.16) saturate(1.08) contrast(1.06) brightness(.95) hue-rotate(-6deg);
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 13%, #000 93%, transparent 100%), linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom, transparent 0, #000 13%, #000 93%, transparent 100%), linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-composite:intersect}
+.about-photo figcaption{font-family:inherit; font-size:13.5px; color:var(--hamu-2); margin-top:10px}
 @media(max-width:760px){ .about{grid-template-columns:1fr; align-items:start} .about-photo img{min-height:240px; max-height:360px} }
 
 /* kapcsolat / térkép */
@@ -279,3 +325,206 @@ a.btn{display:inline-block; text-decoration:none}
 .foot-copy{color:var(--hamu-2); font-size:12.5px; margin-top:22px; padding-top:16px; border-top:1px solid var(--line)}
 .foot-copy .latogato{color:var(--hamu-2)}
 .foot-copy .latogato b{color:var(--hamu); font-weight:700}
+
+/* ===================== Webshop (Kandalló-Futár) ===================== */
+.webshop{background:
+  radial-gradient(120% 130% at 88% -10%, rgba(228,87,27,.14), transparent 55%),
+  radial-gradient(100% 120% at 0% 120%, rgba(245,158,11,.10), transparent 55%),
+  var(--korom-2)}
+.shop-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.shop-item{background:var(--brick); border:1px solid var(--line); border-radius:16px; padding:22px 24px;
+  transition:border-color .3s, background .3s, transform .3s}
+.shop-item:hover{border-color:#5a3a22; background:var(--brick-2); transform:translateY(-4px)}
+.shop-ic{font-size:26px; line-height:1; display:block; margin-bottom:12px}
+.shop-item h4{font-family:"Fraunces"; font-weight:900; font-size:22px; letter-spacing:-.01em; margin:0 0 8px}
+.shop-item p{color:var(--hamu); font-size:16.5px; line-height:1.5; margin:0}
+.shop-cta{display:flex; flex-wrap:wrap; align-items:center; gap:16px 26px; margin-top:28px}
+.shop-hitel{margin:0; font-family:inherit; font-size:15px; color:var(--hamu);
+  border-left:2px solid var(--lang); padding-left:14px; max-width:42ch}
+.shop-hitel b{color:var(--lang-2); font-family:"Hanken Grotesk"; font-weight:700}
+@media(max-width:860px){ .shop-grid{grid-template-columns:repeat(2,1fr)} }
+@media(max-width:520px){ .shop-grid{grid-template-columns:1fr} }
+
+/* Webshop-fejléc: szöveg balra, rajzolt izzó kemence jobbra */
+.webshop .wrap{position:relative}
+.webshop .section-head{max-width:680px; text-align:center; margin:0 auto 34px}
+.webshop-szoveg{max-width:none}
+.webshop .section-head h2{font-size:clamp(34px,4.6vw,52px)}
+.webshop .section-sub{font-size:21px; line-height:1.55}
+.webshop .shop-cta .btn{font-size:17px; padding:18px 36px}
+.kemence-vizual{position:absolute; top:0; right:0; width:min(270px,23%); flex:none}
+@media(max-width:1080px){ .kemence-vizual{display:none} }
+.kemence-vizual svg{width:100%; height:auto; display:block; overflow:visible}
+
+/* test (fehér vakolt kemence, réz nyeregtető, fekete ajtók) */
+.kemence-vizual .ka-arnyek{fill:#000; opacity:.4}
+.kemence-vizual .ka-lab{stroke:#5a4a3a; stroke-opacity:.5; stroke-width:2}
+.kemence-vizual .ka-test{stroke:#5a4a3a; stroke-opacity:.55; stroke-width:2.2}
+.kemence-vizual .ka-rez{stroke:#6a3c18; stroke-opacity:.6; stroke-width:2; stroke-linejoin:round}
+.kemence-vizual .ka-kem{fill:#191919; stroke:#000; stroke-opacity:.4; stroke-width:1}
+.kemence-vizual .ka-kemsapka{fill:#191919}
+.kemence-vizual .ka-homero{fill:#d8d2c6; stroke:#2a2a2a; stroke-width:2.5}
+.kemence-vizual .ka-ajtokeret{fill:#0c0c0c}
+.kemence-vizual .ka-ajto{fill:#1e1e1e; stroke:#000; stroke-opacity:.5; stroke-width:1}
+.kemence-vizual .ka-nyilas{fill:#0a0705}
+.kemence-vizual .ka-ajtoszarny{fill:#171717; stroke:#000; stroke-opacity:.5; stroke-width:1}
+.kemence-vizual .ka-pant{stroke:#000; stroke-width:3; stroke-linecap:round}
+.kemence-vizual .ka-fogo{fill:#0a0a0a}
+.kemence-vizual .ka-parazsagy{fill:#1a0f08}
+
+/* tűz */
+.kemence-vizual .ka-izzas{transform-box:fill-box; transform-origin:center; animation:ka-legzes 3.4s ease-in-out infinite}
+.kemence-vizual .ka-glow{transform-box:fill-box; transform-origin:bottom center; opacity:.55; animation:ka-glow 2.6s ease-in-out infinite}
+.kemence-vizual .ka-lang{transform-box:fill-box; transform-origin:bottom center; animation:ka-tanc 1.3s ease-in-out infinite}
+.kemence-vizual .ka-l2{animation-duration:1.05s; animation-delay:-.45s}
+.kemence-vizual .ka-l3{animation-duration:1.5s; animation-delay:-.8s}
+.kemence-vizual .ka-l4{animation-duration:.85s; animation-delay:-.25s}
+.kemence-vizual .ka-l5{animation-duration:1.15s; animation-delay:-.95s}
+.kemence-vizual .ka-m1{animation-duration:.75s}
+.kemence-vizual .ka-m2{animation-duration:.6s; animation-delay:-.3s}
+.kemence-vizual .ka-parazs circle{fill:var(--lang); animation:ka-parazs 1.8s ease-in-out infinite}
+.kemence-vizual .ka-p2{fill:var(--parazs); animation-duration:2.2s; animation-delay:-.6s}
+.kemence-vizual .ka-p3{animation-duration:1.5s; animation-delay:-1s}
+.kemence-vizual .ka-p4{animation-duration:2s; animation-delay:-.3s}
+.kemence-vizual .ka-p5{fill:var(--parazs); animation-duration:1.6s; animation-delay:-1.2s}
+.kemence-vizual .ka-fust{fill:var(--hamu); opacity:0; transform-box:fill-box; transform-origin:center; animation:ka-fust 4.6s ease-out infinite}
+.kemence-vizual .ka-f2{animation-delay:1.5s}
+.kemence-vizual .ka-f3{animation-delay:2.9s}
+
+@keyframes ka-tanc{
+  0%{transform:scaleY(1) scaleX(1) translateX(0); opacity:.9}
+  25%{transform:scaleY(1.14) scaleX(.93) translateX(-1px); opacity:1}
+  50%{transform:scaleY(.97) scaleX(1.05) translateX(1px); opacity:.94}
+  75%{transform:scaleY(1.17) scaleX(.9) translateX(-.5px); opacity:1}
+  100%{transform:scaleY(1) scaleX(1) translateX(0); opacity:.9}
+}
+@keyframes ka-glow{0%,100%{opacity:.4; transform:scaleY(1)} 50%{opacity:.7; transform:scaleY(1.12)}}
+@keyframes ka-legzes{0%,100%{opacity:.7; transform:scale(1)} 50%{opacity:1; transform:scale(1.1)}}
+@keyframes ka-parazs{0%,100%{opacity:.4} 50%{opacity:1}}
+@keyframes ka-fust{0%{opacity:0; transform:translateY(0) scale(.8)} 25%{opacity:.4} 100%{opacity:0; transform:translateY(-30px) scale(1.7)}}
+
+@media(max-width:820px){
+  .webshop .section-head{flex-direction:column; align-items:flex-start; gap:8px}
+  .kemence-vizual{width:min(300px,78%); align-self:center; margin-top:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .kemence-vizual .ka-izzas,.kemence-vizual .ka-glow,.kemence-vizual .ka-lang,
+  .kemence-vizual .ka-parazs circle,.kemence-vizual .ka-fust{animation:none}
+  .kemence-vizual .ka-glow{opacity:.5}
+  .kemence-vizual .ka-parazs circle{opacity:.8}
+  .kemence-vizual .ka-fust{opacity:.2}
+}
+
+/* ===================================================================
+   FEJLÉC — minta-elrendezés a weblap sötét stílusában
+   (promó-sáv, logó-jelvény + kétsoros márka, nav + gomb jobbra)
+   =================================================================== */
+.promo{background:#0b0805; color:var(--izzas); font-size:14px; letter-spacing:.01em; border-bottom:1px solid var(--line)}
+.promo .wrap{display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 24px; text-align:center; max-width:none}
+.promo b{color:var(--lang-2); font-weight:700}
+.promo a{color:var(--lang); font-weight:700; text-decoration:underline; text-underline-offset:2px}
+.promo a:hover{color:var(--izzas)}
+
+.site-header{background:rgba(10,7,4,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); margin-bottom:16px; position:relative; z-index:40}
+/* Parázs-szikra réteg — a tartalom fölött, a fejléc és a modal alatt */
+.szikra-reteg{position:fixed; inset:0; pointer-events:none; z-index:3}
+/* Scroll-reveal: beúszó elemek */
+.reveal{opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .75s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1; transform:none}
+@media(prefers-reduced-motion:reduce){ .reveal{opacity:1 !important; transform:none !important; transition:none} }
+/* Izzó parázságy a képernyő alján — a szikrák forrása (feldolgozva, nem fotó) */
+.parazs-agy{position:fixed; left:0; right:0; bottom:0; height:24vh; z-index:2; pointer-events:none;
+  background:url("../kepek/parazs.jpg") center bottom / cover no-repeat;
+  filter:blur(1.5px) saturate(1.35) brightness(1.42) contrast(1.1);
+  mix-blend-mode:screen; opacity:.9;
+  -webkit-mask-image:linear-gradient(to top, #000 18%, transparent 96%);
+  mask-image:linear-gradient(to top, #000 18%, transparent 96%);
+  animation:parazs-izzik 4.6s ease-in-out infinite}
+@keyframes parazs-izzik{0%,100%{opacity:.62} 40%{opacity:.86} 70%{opacity:.72}}
+@media(prefers-reduced-motion:reduce){ .parazs-agy{animation:none} }
+/* Finom, enyhe tűz-izzás a képernyő alján — innen csapnak fel a szikrák */
+.tuz-izzas{position:fixed; left:0; right:0; bottom:0; height:24vh; z-index:2; pointer-events:none;
+  transform-origin:bottom;
+  background:linear-gradient(to top, rgba(255,100,30,.04), rgba(228,87,27,.012) 45%, transparent);
+  animation:tuz-vibra 4.6s ease-in-out infinite}
+/* Nem homogén: ahogy föllobban, egyszerre fényesebb ÉS magasabb — rendszertelenül */
+@keyframes tuz-vibra{
+  0%  {opacity:.72; transform:scaleY(.94)}
+  9%  {opacity:.92; transform:scaleY(1.03)}
+  18% {opacity:.80; transform:scaleY(.98)}
+  27% {opacity:1;   transform:scaleY(1.12)}
+  38% {opacity:.85; transform:scaleY(1.00)}
+  50% {opacity:.97; transform:scaleY(1.07)}
+  61% {opacity:.77; transform:scaleY(.96)}
+  72% {opacity:1;   transform:scaleY(1.13)}
+  83% {opacity:.87; transform:scaleY(1.02)}
+  93% {opacity:.93; transform:scaleY(.99)}
+  100%{opacity:.72; transform:scaleY(.94)}
+}
+@media(prefers-reduced-motion:reduce){ .tuz-izzas{animation:none} }
+.site-header .nav{height:98px; gap:30px; justify-content:flex-start}
+.site-header .brand{gap:13px; margin-right:auto}
+.brand-badge{width:66px; height:66px; border-radius:16px; object-fit:cover; border:1px solid var(--line); background:var(--brick); flex:none; display:block}
+.brand-txt{display:flex; flex-direction:column; line-height:1.15}
+.brand-txt strong{font-family:"Fraunces"; font-weight:900; font-size:33px; color:var(--izzas)}
+.brand-txt small{font-family:"Space Mono",monospace; font-weight:400; font-size:13px; letter-spacing:.13em; text-transform:uppercase; color:var(--hamu-2); margin-top:4px}
+.site-header .topnav{gap:32px; font-size:18px}
+.site-header .topnav a{color:var(--hamu); font-weight:600; padding:8px 0; border-bottom:2px solid transparent; transition:color .2s, border-color .2s}
+.site-header .topnav a:hover{color:var(--izzas); border-bottom-color:var(--lang)}
+.nav-btn{display:inline-flex; align-items:center; color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs));
+  border-radius:14px; padding:16px 30px; font-family:"Hanken Grotesk",sans-serif; font-weight:700; font-size:17px; flex:none; transition:filter .2s, transform .2s}
+.nav-btn:hover{filter:brightness(1.06); transform:translateY(-1px); color:#231206}
+@media(max-width:900px){ .site-header .topnav{display:none} }
+
+/* ===================================================================
+   LÁBLÉC — nagyobb, a szekciók szélességében; térkép külön a jobb szélen
+   =================================================================== */
+.site-footer{background:#0f0a06; color:var(--hamu); padding:46px 0 26px; border-top:1px solid var(--line)}
+.foot-grid{display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr 1.9fr; gap:48px; align-items:start}
+.foot-brand .brand{display:flex; align-items:center; gap:15px; font-family:inherit; font-weight:400; font-size:inherit}
+.foot-brand .brand-badge{width:56px; height:56px; border-radius:15px}
+.foot-brand .brand-txt strong{color:var(--izzas); font-size:26px}
+.foot-brand .brand-txt small{font-size:13px}
+.foot-tag{color:var(--hamu); font-size:17px; line-height:1.7; margin:20px 0 0; max-width:36ch}
+.foot-soc{display:flex; gap:12px; margin-top:24px}
+.foot-soc a{width:46px; height:46px; border-radius:13px; border:1px solid var(--line); display:grid; place-items:center; color:var(--izzas); font-weight:700; font-size:19px; transition:background .2s, border-color .2s}
+.foot-soc a:hover{background:var(--parazs); border-color:var(--parazs); color:#fff}
+.foot-col h5{font-family:"Hanken Grotesk",sans-serif; font-size:15.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--izzas); margin:0 0 22px}
+.foot-col a,.foot-col p{display:block; color:var(--hamu); font-size:17.5px; margin:0 0 14px; transition:color .2s}
+.foot-col a:hover{color:var(--lang)}
+.foot-map{width:100%; height:224px; border-radius:18px; overflow:hidden; border:1px solid var(--line)}
+.foot-map iframe{width:100%; height:100%; border:0; display:block; filter:invert(.92) hue-rotate(180deg) brightness(.95) contrast(.92)}
+.foot-bottom{margin-top:30px; padding-top:20px; border-top:1px solid var(--line); font-size:15px; color:var(--hamu-2);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px}
+.foot-bottom .latogato{color:var(--hamu-2)}
+.foot-bottom .latogato b{color:var(--hamu); font-weight:700}
+@media(max-width:1100px){ .foot-grid{grid-template-columns:1fr 1fr 1fr; gap:32px} .foot-map{grid-column:1 / -1; height:200px} }
+@media(max-width:680px){ .foot-grid{grid-template-columns:1fr 1fr} }
+@media(max-width:440px){ .foot-grid{grid-template-columns:1fr} }
+
+/* ===================================================================
+   BLOKK-CÍMEK (szekció-eyebrow-k) — egységes, nagy, középre
+   Nem érinti a hero fölötti kis feliratot (.hero-text .eyebrow).
+   =================================================================== */
+.section-head{text-align:center; margin-left:auto; margin-right:auto}
+.section-head .eyebrow,
+.about-text .eyebrow{
+  display:block; text-align:center; margin:0 auto 16px;
+  font-family:"Fraunces", serif; font-weight:900; letter-spacing:-.01em; text-transform:none;
+  font-size:clamp(32px,4.6vw,50px); line-height:1.08; color:var(--lang);
+}
+/* Rólunk: kétoszlopos (kép miatt) — a cím + alcím balra */
+.about-text .eyebrow{text-align:left; margin-left:0; margin-right:0}
+.about-text h2{text-align:left}
+
+/* ===================================================================
+   BÚZA-MOTÍVUM — halvány, kézműves búzakalász néhány szekció sarkában
+   =================================================================== */
+#elmeny, #rolunk, .webshop{position:relative; overflow:hidden}
+#elmeny::after, #rolunk::after, .webshop::before{
+  content:""; position:absolute; pointer-events:none; z-index:0;
+  background:url("../kepek/buza.svg") no-repeat center / contain; opacity:.22}
+#elmeny::after{top:-46px; right:8px; width:210px; height:300px; transform:rotate(18deg)}
+#rolunk::after{bottom:-56px; left:-6px; width:200px; height:290px; transform:rotate(-16deg)}
+.webshop::before{bottom:-50px; left:4px; width:186px; height:270px; transform:rotate(-12deg); opacity:.18}
+@media(max-width:640px){ #elmeny::after, #rolunk::after, .webshop::before{display:none} }

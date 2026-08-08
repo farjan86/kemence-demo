@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 152" fill="none" stroke="#C9BDB0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+  <!-- lábak -->
+  <path d="M38 120 L36 150"/>
+  <path d="M76 120 L78 150"/>
+  <!-- test -->
+  <rect x="28" y="46" width="58" height="76" rx="4"/>
+  <!-- lapos tető perem -->
+  <path d="M23 46 L91 46"/>
+  <!-- kémény + sapka -->
+  <rect x="68" y="20" width="12" height="26" rx="2"/>
+  <path d="M63 20 L85 20"/>
+  <!-- két fekete ajtó -->
+  <rect x="44" y="64" width="26" height="46" rx="3"/>
+  <path d="M44 87 L70 87"/>
+</svg>

@@ -1,129 +1,169 @@
 // =====================================================================
-//  Kemence Akadémia — publikus oldal logikája
-//  1) Programok betöltése a "programok" nézetből, kirajzolás.
-//  2) Foglalási ablak: validáció + foglalás írása a "bookings" táblába.
+//  Kemence Akadémia — publikus oldal: ADAT + PROGRAMOK kirajzolása
+//  Programonként csoportosít: egy program = egy kártya, benne több
+//  IDŐPONT-csempe (dátum · ár · szabad hely). A segédek: util.js;
+//  a foglalási ablak: foglalas.js.
 // =====================================================================
 
 // Kapcsolat a Supabase-hez (a config.js adataival)
 const db = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
-// Segédek
-const HUF = n => Number(n).toLocaleString("hu-HU") + " Ft";
-function formatDatum(iso){
-  if(!iso) return null;
-  return new Date(iso).toLocaleString("hu-HU",
-    { year:"numeric", month:"long", day:"numeric", hour:"2-digit", minute:"2-digit" });
-}
-// Lezárult-e a program? A NAP számít: a mai nap még foglalható, a korábbiak nem.
-function lezarultNap(iso){
-  if(!iso) return false;
-  const d = new Date(iso), most = new Date();
-  const esemenyNap = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const maNap      = new Date(most.getFullYear(), most.getMonth(), most.getDate());
-  return esemenyNap < maNap;
-}
-
-// A betöltött programok (id → adatok), hogy a foglaláskor elérjük őket
+// A betöltött programok (csoportosítva) + időpont-index a foglaláshoz.
+// (A foglalas.js ezt olvassa futásidőben.)
 let programLista = [];
+let idopontIndex = {};   // idopont_id -> { program, ido }
+let globalisSzunet = false;   // settings.foglalas_szunet — „minden foglalás" felfüggesztve
 
 // -------------------- Beállítások (settings) --------------------
 // Az info-sáv szövege az adatbázisból jön; az admin szerkesztheti.
 // (Sima szövegként jelenítjük meg — textContent — a biztonság miatt.)
 async function betoltBeallitasok(){
   const { data } = await db.from("settings")
-    .select("foglalas_infosav").eq("id", 1).maybeSingle();
-  if(data && data.foglalas_infosav){
-    const el = document.getElementById("mInfosav");
-    if(el) el.textContent = data.foglalas_infosav;
+    .select("foglalas_infosav, foglalas_szunet").eq("id", 1).maybeSingle();
+  if(data){
+    globalisSzunet = !!data.foglalas_szunet;
+    if(data.foglalas_infosav){
+      const el = document.getElementById("mInfosav");
+      if(el) el.textContent = data.foglalas_infosav;
+    }
   }
 }
 
-// Biztonsági HTML-tisztító: csak félkövér/dőlt/aláhúzás/felsorolás/sortörés maradhat (a leírás rich text)
-function tisztitHtml(html){
-  const OK = { B:1, STRONG:1, I:1, EM:1, U:1, UL:1, OL:1, LI:1, BR:1, P:1, DIV:1, BLOCKQUOTE:1, FONT:1 };
-  const tpl = document.createElement("template");
-  tpl.innerHTML = html || "";
-  (function walk(parent){
-    Array.from(parent.childNodes).forEach(n => {
-      if(n.nodeType === 1){
-        if(OK[n.tagName]){
-          const keepSize = (n.tagName === "FONT") ? n.getAttribute("size") : null;
-          while(n.attributes.length) n.removeAttribute(n.attributes[0].name);
-          if(keepSize && /^[1-7]$/.test(keepSize)) n.setAttribute("size", keepSize);
-          walk(n);
-        }
-        else { walk(n); while(n.firstChild) parent.insertBefore(n.firstChild, n); parent.removeChild(n); }
-      } else if(n.nodeType === 8){ parent.removeChild(n); }
-    });
-  })(tpl.content);
-  return tpl.innerHTML.trim();
+// -------------------- Egy időpont-csempe --------------------
+function csempe(i, felfuggesztve){
+  const datum = formatDatumRovid(i.idopont);
+  const ar = i.kedvezmenyes_ar
+    ? `<span class="i-ar"><span class="old">${HUF(i.ar)}</span><span class="sale">${HUF(i.kedvezmenyes_ar)}</span></span>`
+    : `<span class="i-ar">${HUF(i.ar)}</span>`;
+
+  // Csoportos korlátok: lezárt-e, mert elérte a max. foglalásokat, vagy a szabad hely < minimum?
+  const maxElerve = (i.max_foglalasok != null) && ((i.foglalasok_szama || 0) >= i.max_foglalasok);
+  const kevesMint = (i.min_letszam != null) && (i.szabad_helyek < i.min_letszam);
+  const csoportos = (i.min_letszam != null) || (i.max_foglalasok != null);
+
+  let allapot, cls, disabled = "";
+  if(i.idopont_statusz === "elmaradt"){ allapot = "Elmarad"; cls = "full"; disabled = "disabled"; }
+  else if(i.szabad_helyek <= 0 || maxElerve || kevesMint){ allapot = "Betelt"; cls = "full"; disabled = "disabled"; }
+  else if(i.min_letszam != null){      allapot = `Min. ${i.min_letszam} fő`; cls = "free"; }
+  else if(csoportos){                  allapot = "Csoportos"; cls = "free"; }
+  else {                               allapot = `${i.max_letszam - i.szabad_helyek}/${i.max_letszam} foglalt`; cls = "free"; }
+  if(felfuggesztve) disabled = "disabled";   // szünet: nem foglalható, de a dátum/ár látszik
+
+  return `<button class="idopont-btn" type="button" data-idopont="${i.idopont_id}" ${disabled}>
+    <span class="i-datum">${datum}</span>
+    ${ar}
+    <span class="i-hely ${cls}">${allapot}</span>
+  </button>`;
 }
 
-// -------------------- Kártya HTML --------------------
+// -------------------- Kártya HTML (egy program) --------------------
 function kartya(p){
-  const kep = p.foto_url ? `<img class="card-kep" src="${p.foto_url}" alt="" loading="lazy">` : "";
-  const rovid = tisztitHtml(p.rovid_leiras || p.leiras || "");
-  const reszlet = p.leiras ? `<button class="reszlet-btn" data-reszlet="${p.id}">Részletek →</button>` : "";
+  const kep    = p.foto_url ? `<img class="card-kep" src="${p.foto_url}" alt="" loading="lazy">` : "";
+  const rovid  = tisztitHtml(p.rovid_leiras || p.leiras || "");
+  const reszlet = p.leiras ? `<button class="reszlet-btn" data-reszlet="${p.workshop_id}">Részletek →</button>` : "";
+  const eloadoHtml = p.eloado ? `<p class="eloado">Előadó: <b>${escapeHtml(p.eloado)}</b></p>` : "";
 
-  if(p.statusz === "hamarosan"){
+  // Csak a JÖVŐBELI időpontokat mutatjuk (a múltat elrejtjük), időrendben.
+  const jovo = p.idopontok
+    .filter(i => !lezarultNap(i.idopont))
+    .sort((a, b) => new Date(a.idopont) - new Date(b.idopont));
+
+  // „Hamarosan": ha a program hamarosan-státuszú, vagy nincs jövőbeli időpont.
+  if(p.program_statusz === "hamarosan" || jovo.length === 0){
     return `<article class="card">
       ${kep}
       <div class="card-top"><h3>${p.cim}</h3><span class="badge soon">Hamarosan</span></div>
+      ${eloadoHtml}
       <p class="desc">${rovid}</p>
       ${reszlet}
     </article>`;
   }
-  const ar = p.kedvezmenyes_ar
-    ? `<span class="old">${HUF(p.ar)}</span><span class="sale">${HUF(p.kedvezmenyes_ar)}</span>`
-    : `${HUF(p.ar)}`;
-  const lezarult = lezarultNap(p.idopont);
-  const betelt   = p.szabad_helyek <= 0;
-  const foglalhato = !lezarult && !betelt;
-  const seats = lezarult
-    ? `<div class="seats full">Lezárult</div>`
-    : betelt
-    ? `<div class="seats full">Betelt</div>`
-    : `<div class="seats free">${p.szabad_helyek} szabad hely / ${p.max_letszam}</div>`;
-  const gombFelirat = lezarult ? "Lezárult" : betelt ? "Betelt" : "Foglalás →";
-  const datum = formatDatum(p.idopont);
+
+  const idotartam = p.varhato_idotartam ? `<div class="meta">${escapeHtml(p.varhato_idotartam)}</div>` : "";
+
+  // Átmeneti szünet (program-szintű vagy globális): üzenet + tiltott (de látható) csempék.
+  if(p.foglalas_felfuggesztve || globalisSzunet){
+    return `<article class="card">
+      ${kep}
+      <div class="card-top"><h3>${p.cim}</h3></div>
+      ${eloadoHtml}
+      <p class="desc">${rovid}</p>
+      ${reszlet}
+      ${idotartam}
+      <div class="idopont-lista">${jovo.map(i => csempe(i, true)).join("")}</div>
+      <div class="szunet-sav">Foglalás átmenetileg felfüggesztve</div>
+    </article>`;
+  }
 
   return `<article class="card">
     ${kep}
     <div class="card-top"><h3>${p.cim}</h3></div>
+    ${eloadoHtml}
     <p class="desc">${rovid}</p>
     ${reszlet}
-    ${datum ? `<div class="meta"><b>${datum}</b>${p.varhato_idotartam ? " · "+p.varhato_idotartam : ""}</div>` : ""}
-    ${seats}
-    <div class="card-foot">
-      <div class="price">${ar}</div>
-      <button class="btn" data-id="${p.id}" ${foglalhato ? "" : "disabled"}>${gombFelirat}</button>
-    </div>
+    ${idotartam}
+    <div class="idopont-cimke">Válassz időpontot</div>
+    <div class="idopont-lista">${jovo.map(i => csempe(i)).join("")}</div>
   </article>`;
 }
 
-// -------------------- Programok betöltése --------------------
+// -------------------- Programok betöltése + csoportosítás --------------------
 async function betoltProgramok(){
   const cel = document.getElementById("programok");
   const { data, error } = await db
     .from("programok").select("*")
     .eq("archivalt", false)
-    .order("idopont", { ascending: true, nullsFirst: false });
+    .order("cim", { ascending: true })
+    .order("idopont", { ascending: true, nullsFirst: true });
 
   if(error){ cel.innerHTML = `<p class="status">Hiba a betöltéskor: ${error.message}</p>`; console.error(error); return; }
   if(!data || data.length === 0){ cel.innerHTML = `<p class="status">Még nincs meghirdetett program.</p>`; return; }
 
-  programLista = data;
-  cel.innerHTML = data.map(kartya).join("");
-  cel.querySelectorAll(".btn[data-id]").forEach(b =>
-    b.addEventListener("click", () => nyitFoglalas(b.dataset.id)));
-  cel.querySelectorAll(".reszlet-btn").forEach(b =>
+  // Csoportosítás workshop_id szerint (a nézet program × időpont sorokat ad).
+  const map = new Map();
+  idopontIndex = {};
+  for(const r of data){
+    let p = map.get(r.workshop_id);
+    if(!p){
+      p = {
+        workshop_id: r.workshop_id, cim: r.cim, rovid_leiras: r.rovid_leiras, leiras: r.leiras,
+        eloado: r.eloado, varhato_idotartam: r.varhato_idotartam, foto_url: r.foto_url,
+        program_statusz: r.program_statusz, foglalas_felfuggesztve: r.foglalas_felfuggesztve,
+        sorrend: r.sorrend, idopontok: []
+      };
+      map.set(r.workshop_id, p);
+    }
+    if(r.idopont_id){
+      const ido = {
+        idopont_id: r.idopont_id, idopont: r.idopont, ar: r.ar, kedvezmenyes_ar: r.kedvezmenyes_ar,
+        max_letszam: r.max_letszam, idopont_statusz: r.idopont_statusz, szabad_helyek: r.szabad_helyek,
+        max_foglalasok: r.max_foglalasok, min_letszam: r.min_letszam, foglalasok_szama: r.foglalasok_szama
+      };
+      p.idopontok.push(ido);
+      idopontIndex[r.idopont_id] = { program: p, ido };
+    }
+  }
+  programLista = Array.from(map.values());
+
+  // Sorrend: az admin által húzással beállított KÉZI sorrend (workshops.sorrend);
+  // azonos sorrendnél a legközelebbi jövőbeli időpont szerint (a régi viselkedés tie-breakként).
+  const kulcs = p => {
+    const jovo = p.idopontok.filter(i => !lezarultNap(i.idopont)).map(i => +new Date(i.idopont));
+    return jovo.length ? Math.min(...jovo) : Infinity;
+  };
+  programLista.sort((a, b) => ((a.sorrend || 0) - (b.sorrend || 0)) || (kulcs(a) - kulcs(b)));
+
+  cel.innerHTML = programLista.map(kartya).join("");
+  cel.querySelectorAll(".idopont-btn[data-idopont]").forEach(b =>
+    b.addEventListener("click", () => nyitFoglalas(b.dataset.idopont)));   // nyitFoglalas: foglalas.js
+  cel.querySelectorAll(".reszlet-btn[data-reszlet]").forEach(b =>
     b.addEventListener("click", () => mutatReszletek(b.dataset.reszlet)));
 }
 
 // -------------------- Részletek ablak --------------------
 const reszletModal = document.getElementById("reszletModal");
-function mutatReszletek(id){
-  const p = programLista.find(x => x.id === id);
+function mutatReszletek(workshop_id){
+  const p = programLista.find(x => x.workshop_id === workshop_id);
   if(!p) return;
   document.getElementById("rTitle").textContent = p.cim;
   document.getElementById("rLeiras").innerHTML = tisztitHtml(p.leiras || "");
@@ -131,140 +171,6 @@ function mutatReszletek(id){
 }
 document.getElementById("rClose").addEventListener("click", () => { reszletModal.hidden = true; });
 document.addEventListener("keydown", (e) => { if(e.key === "Escape" && !reszletModal.hidden) reszletModal.hidden = true; });
-
-// ===================== Foglalási ablak =====================
-const modal   = document.getElementById("foglalasModal");
-const formEl  = document.getElementById("foglalasForm");
-const errEl   = document.getElementById("mErr");
-const submitBtn = document.getElementById("mSubmit");
-let aktualisProgram = null;
-
-// -------- Validáció --------
-const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
-
-// Telefon: bármilyen elválasztó megengedett (szóköz, -, /, ., () ).
-// Tisztításkor csak a számjegyeket (+ opcionális +) tartjuk meg, és a
-// hazai 06.. / 36.. formát +36..-ra normalizáljuk → egységes adat.
-function tisztitTelefon(v){
-  let s = v.replace(/[^\d+]/g, "");     // csak számjegy és +
-  s = s.replace(/(?!^)\+/g, "");        // + csak az elején lehet
-  if(s.startsWith("06"))      s = "+36" + s.slice(2);
-  else if(s.startsWith("36")) s = "+"  + s;
-  return s;
-}
-const telefonOk = s => /^\+?\d{8,15}$/.test(s);
-
-// Gyakori e-mail domain-elgépelések felismerése (pl. gmail.coom → gmail.com).
-const GYAKORI_DOMAINEK = ["gmail.com","googlemail.com","yahoo.com","hotmail.com",
-  "outlook.com","icloud.com","freemail.hu","citromail.hu","t-online.hu"];
-function tavolsag(a,b){                 // Levenshtein-távolság
-  const dp = Array.from({length:a.length+1}, (_,i)=>Array(b.length+1).fill(0));
-  for(let i=0;i<=a.length;i++) dp[i][0]=i;
-  for(let j=0;j<=b.length;j++) dp[0][j]=j;
-  for(let i=1;i<=a.length;i++)
-    for(let j=1;j<=b.length;j++)
-      dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
-  return dp[a.length][b.length];
-}
-function domainJavaslat(email){         // a legközelebbi gyakori domain, ha közel van
-  const d = (email.split("@")[1]||"").toLowerCase();
-  if(!d || GYAKORI_DOMAINEK.includes(d)) return null;
-  let best=null, bestD=3;
-  for(const g of GYAKORI_DOMAINEK){ const t=tavolsag(d,g); if(t>0 && t<bestD){ bestD=t; best=g; } }
-  return best;
-}
-let emailFigyelmeztetve = false;        // hogy a javaslat után másodszorra elmenjen
-
-function nyitFoglalas(id){
-  aktualisProgram = programLista.find(p => p.id === id);
-  if(!aktualisProgram) return;
-  if(lezarultNap(aktualisProgram.idopont)) return;   // lezárult programra nem nyílik foglalás
-
-  document.getElementById("mTitle").textContent = aktualisProgram.cim;
-  const datum = formatDatum(aktualisProgram.idopont);
-  document.getElementById("mMeta").innerHTML =
-    `${datum ? "<b>"+datum+"</b> · " : ""}${aktualisProgram.szabad_helyek} szabad hely`;
-
-  // alaphelyzet
-  formEl.reset(); errEl.hidden = true; emailFigyelmeztetve = false;
-  formEl.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
-  document.getElementById("mFormWrap").hidden = false;
-  document.getElementById("mSuccess").hidden = true;
-  modal.hidden = false;
-  formEl.nev.focus();
-}
-
-function zarFoglalas(){ modal.hidden = true; aktualisProgram = null; }
-
-function hiba(uzenet, mezo){
-  errEl.textContent = uzenet; errEl.hidden = false;
-  if(mezo){ mezo.classList.add("bad"); mezo.focus(); }
-}
-
-// Beküldés
-formEl.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  errEl.hidden = true;
-  formEl.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
-
-  const nev        = formEl.nev.value.trim();
-  const email      = formEl.email.value.trim();
-  const telefon    = tisztitTelefon(formEl.telefon.value);   // normalizált (+36..)
-  const letszam    = parseInt(formEl.letszam.value, 10);
-  const megjegyzes = formEl.megjegyzes.value.trim();
-
-  // Ellenőrzések — hibás adattal nem küldhető el
-  if(lezarultNap(aktualisProgram.idopont))
-    return hiba("Erre a programra már nem lehet foglalni (lezárult). Frissítsd az oldalt.");
-  if(!nev)            return hiba("Kérlek add meg a neved.", formEl.nev);
-  if(!emailOk(email)) return hiba("Érvényes e-mail címet adj meg.", formEl.email);
-
-  // Elgépelés-figyelmeztetés (nem tiltás): ha közel van egy gyakori domainhez
-  const javaslat = domainJavaslat(email);
-  if(javaslat && !emailFigyelmeztetve){
-    emailFigyelmeztetve = true;
-    return hiba(`Biztos jó az e-mail? Talán @${javaslat} akartál. Ha stimmel, nyomd meg mégegyszer a Küldést.`, formEl.email);
-  }
-
-  if(!telefonOk(telefon)) return hiba("Érvényes telefonszámot adj meg.", formEl.telefon);
-  if(!(letszam >= 1))     return hiba("A létszám legalább 1 fő.", formEl.letszam);
-  if(letszam > aktualisProgram.szabad_helyek)
-    return hiba(`Csak ${aktualisProgram.szabad_helyek} szabad hely van.`, formEl.letszam);
-
-  submitBtn.disabled = true; submitBtn.textContent = "Küldés…";
-
-  // A statusz alapból "jovahagyasra_var" (az adatbázis állítja be)
-  const { error } = await db.from("bookings").insert({
-    workshop_id: aktualisProgram.id,
-    nev, email, telefon, letszam,
-    megjegyzes: megjegyzes || null
-  });
-
-  submitBtn.disabled = false; submitBtn.textContent = "Foglalás elküldése";
-
-  if(error){
-    // pl. ha közben betelt (a szerveroldali túlfoglalás-védelem jelez)
-    const uzenet = /szabad hely/i.test(error.message)
-      ? "Sajnos időközben betelt a hely. Frissítsd az oldalt."
-      : "Hiba történt a foglaláskor: " + error.message;
-    console.error(error);
-    return hiba(uzenet);
-  }
-
-  // Siker → sikerképernyő + a lista frissítése (szabad helyek)
-  document.getElementById("mFormWrap").hidden = true;
-  document.getElementById("mSuccess").hidden = false;
-  betoltProgramok();
-});
-
-// Ha az e-mailt módosítják, a figyelmeztetés nullázódik
-formEl.email.addEventListener("input", () => { emailFigyelmeztetve = false; });
-
-// Ablak bezárása
-document.getElementById("mClose").addEventListener("click", zarFoglalas);
-document.getElementById("mDone").addEventListener("click", zarFoglalas);
-// Nincs háttér-kattintás bezárás (szövegkijelöléskor is elsülne). Esc marad.
-document.addEventListener("keydown", (e) => { if(e.key === "Escape" && !modal.hidden) zarFoglalas(); });
 
 // -------------------- Látogatás-számláló --------------------
 // Böngészőnként 6 óránként max egyszer számít új látogatásnak (localStorage).
@@ -286,7 +192,6 @@ async function latogatasSzamlalo(){
   } catch(_){ /* a látogatót ne zavarja meg semmilyen hiba */ }
 }
 
-// Indítás
-betoltBeallitasok();
-betoltProgramok();
+// Indítás — előbb a beállítások (globális szünet), utána a programok
+(async () => { await betoltBeallitasok(); betoltProgramok(); })();
 latogatasSzamlalo();

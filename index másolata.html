@@ -12,24 +12,21 @@
 <link rel="stylesheet" href="css/dialog.css">
 </head>
 <body id="top">
-<canvas class="szikra-reteg" aria-hidden="true"></canvas>
-<div class="parazs-agy" aria-hidden="true"></div>
-<div class="tuz-izzas" aria-hidden="true"></div>
 
 <header class="site-header">
   <div class="wrap nav">
     <a class="brand" href="#top">
-      <img class="brand-badge" src="kepek/logo-mark.png" alt="Kemence Akadémia logó">
-      <span class="brand-txt"><strong>Kemence Akadémia</strong><small>Kézműves sütő-műhely · Pécs</small></span>
+      <img class="brand-logo" src="kepek/logo-mark.png" alt="Kemence Akadémia logó">
+      Kemence Akadémia
     </a>
     <nav class="topnav">
       <a href="#workshopok">Workshopok</a>
       <a href="#elmeny">Élmény</a>
-      <a href="#webshop">Webshop</a>
       <a href="#rolunk">Rólunk</a>
+      <a href="#webshop">Webshop</a>
       <a href="#kapcsolat">Kapcsolat</a>
+      <a href="#programok-szekcio" class="nav-cta">Programok</a>
     </nav>
-    <a href="#programok-szekcio" class="nav-btn">Foglalj időpontot</a>
   </div>
 </header>
 
@@ -180,21 +177,6 @@
     </div>
   </section>
 
-  <!-- ===================== EGYEDI PROGRAMOK (ajánlatkérés, élő adat) ===================== -->
-  <section class="section" id="egyedi-programok">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Egyedi programok</p>
-        <h2>Rendezvényre, csapatnak, ünnepre</h2>
-        <p class="section-sub">Leánybúcsú, szülinap, csapatépítő, óvodás- vagy családi program — mondd el, mit szeretnél, és személyre szabott ajánlatot küldünk.</p>
-      </div>
-
-      <div id="egyedi-programok-lista" class="ep-grid" aria-live="polite">
-        <p class="status">Betöltés…</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ===================== WEBSHOP (Kandalló-Futár) ===================== -->
   <section class="section webshop" id="webshop">
     <div class="wrap">
@@ -205,7 +187,7 @@
           <p class="section-sub">A workshop után otthon se érjen véget a sütés. Az ország legnagyobb kemencekészítőjeként a <a href="https://kandallo-futar.hu/" target="_blank" rel="noopener">Kandalló-Futár</a> webshopban mindent beszerzel, ami a kerti tűzhöz kell — hogy a vasárnapi pizza és a frissen sült kenyér nálad is a kertből érkezzen.</p>
         </div>
         <div class="kemence-vizual" aria-hidden="true">
-          <svg viewBox="0 84 300 316" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="ka-vakolat" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0" stop-color="#EFEBE4"/><stop offset="1" stop-color="#CDC6BA"/>
@@ -232,13 +214,16 @@
             <rect class="ka-lab" x="92" y="320" width="30" height="70" rx="2" fill="url(#ka-vakolat)"/>
             <rect class="ka-lab" x="178" y="320" width="30" height="70" rx="2" fill="url(#ka-vakolat)"/>
 
-            <!-- kémény + gomba-sapka (rövid) -->
-            <rect class="ka-kem" x="156" y="126" width="16" height="46" rx="2"/>
-            <ellipse class="ka-kemsapka" cx="164" cy="126" rx="24" ry="7"/>
-            <ellipse class="ka-kemsapka" cx="164" cy="118" rx="11" ry="5"/>
+            <!-- kémény + gomba-sapka -->
+            <rect class="ka-kem" x="156" y="58" width="16" height="106" rx="2"/>
+            <ellipse class="ka-kemsapka" cx="164" cy="58" rx="24" ry="7"/>
+            <ellipse class="ka-kemsapka" cx="164" cy="50" rx="11" ry="5"/>
 
-            <!-- vakolt test (magasabb, lapos tető) -->
-            <rect class="ka-test" x="76" y="170" width="148" height="154" rx="4" fill="url(#ka-vakolat)"/>
+            <!-- réz nyeregtető (nagy eresz) -->
+            <path class="ka-rez" d="M50 218 L150 140 L250 218 Z" fill="url(#ka-rezG)"/>
+
+            <!-- vakolt test -->
+            <rect class="ka-test" x="76" y="212" width="148" height="112" rx="3" fill="url(#ka-vakolat)"/>
 
             <!-- hőmérő -->
             <circle class="ka-homero" cx="150" cy="226" r="7"/>
@@ -272,9 +257,9 @@
             </g>
 
             <!-- füst -->
-            <circle class="ka-fust ka-f1" cx="164" cy="110" r="7"/>
-            <circle class="ka-fust ka-f2" cx="171" cy="103" r="6"/>
-            <circle class="ka-fust ka-f3" cx="159" cy="97" r="5"/>
+            <circle class="ka-fust ka-f1" cx="164" cy="44" r="7"/>
+            <circle class="ka-fust ka-f2" cx="171" cy="37" r="6"/>
+            <circle class="ka-fust ka-f3" cx="159" cy="31" r="5"/>
           </svg>
         </div>
       </div>
@@ -295,49 +280,47 @@
     </div>
   </section>
 
+  <!-- ===================== KAPCSOLAT / TÉRKÉP ===================== -->
+  <section class="section kapcsolat" id="kapcsolat">
+    <div class="wrap kapcsolat-grid">
+      <div class="kapcsolat-info">
+        <p class="eyebrow">Kapcsolat</p>
+        <h2>Itt találsz minket</h2>
+        <div class="kapcsolat-lista">
+          <p><span class="k-ikon">📍</span> 7632 Pécs, Siklósi út 68.</p>
+          <p><span class="k-ikon">✉</span> <a href="mailto:info@mobilkemence.xyz">info@mobilkemence.xyz</a></p>
+          <p><span class="k-ikon">📞</span> <a href="tel:+36706262500">70/62-62-500</a></p>
+        </div>
+        <a href="#programok-szekcio" class="btn">Foglalj időpontot →</a>
+      </div>
+      <div class="kapcsolat-terkep">
+        <iframe title="Térkép, 7632 Pécs, Siklósi út 68"
+          src="https://www.google.com/maps?q=7632+P%C3%A9cs,+Sikl%C3%B3si+%C3%BAt+68&output=embed"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
 
 </main>
 
 <!-- ===================== LÁBLÉC ===================== -->
-<footer class="site-footer" id="kapcsolat">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <div class="brand">
-          <img class="brand-badge" src="kepek/logo-mark.png" alt="Kemence Akadémia logó">
-          <span class="brand-txt"><strong>Kemence Akadémia</strong><small>Kézműves sütő-műhely · Pécs</small></span>
-        </div>
-        <p class="foot-tag">Kézműves sütő-workshopok fatüzelésű kemencében. A workshopokat a Mobilkemence csapata tartja.</p>
-      </div>
-      <div class="foot-col">
-        <h5>Fedezd fel</h5>
-        <a href="#workshopok">Workshopok</a>
-        <a href="#elmeny">Élmény</a>
-        <a href="#rolunk">Rólunk</a>
-        <a href="#programok-szekcio">Foglalás</a>
-      </div>
-      <div class="foot-col">
-        <h5>Linkek</h5>
-        <a href="https://www.facebook.com/mobilkemence.pecs" target="_blank" rel="noopener">Facebook csoport</a>
-        <a href="https://mobilkemence.xyz/" target="_blank" rel="noopener">mobilkemence.xyz</a>
-        <a href="https://kandallo-futar.hu/" target="_blank" rel="noopener">Kandalló-Futár webshop</a>
-        <a href="https://kandallo-futar.hu/index.php?id_cms=7&controller=cms" target="_blank" rel="noopener">Adatvédelem</a>
-      </div>
-      <div class="foot-col">
-        <h5>Kapcsolat</h5>
-        <p>📍 7632 Pécs, Siklósi út 68.</p>
-        <a href="mailto:info@mobilkemence.xyz">✉ info@mobilkemence.xyz</a>
-        <a href="tel:+36706262500">📞 +36 70 62-62-500</a>
-      </div>
-      <div class="foot-map">
-        <iframe title="Térkép, 7632 Pécs, Siklósi út 68" src="https://www.google.com/maps?q=7632+P%C3%A9cs,+Sikl%C3%B3si+%C3%BAt+68&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </div>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="foot-brand">
+      <span class="brand">
+        <img class="brand-logo" src="kepek/logo-mark.png" alt="Kemence Akadémia logó">
+        Kemence Akadémia
+      </span>
+      <p class="foot-tag">Kézműves sütő-workshopok fatüzelésű kemencében · Pécs</p>
     </div>
-    <div class="foot-bottom">
-      <span>© Kemence Akadémia · A workshopokat a Mobilkemence csapata tartja.</span>
-      <span class="latogato" id="latogatoWrap" hidden><b id="latogatoSzam"></b> látogatás</span>
-    </div>
+    <nav class="foot-links">
+      <a href="https://www.facebook.com/mobilkemence.pecs" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://mobilkemence.xyz/" target="_blank" rel="noopener">mobilkemence.xyz</a>
+      <a href="https://kandallo-futar.hu/" target="_blank" rel="noopener">Webshop</a>
+      <a href="https://kandallo-futar.hu/index.php?id_cms=7&controller=cms" target="_blank" rel="noopener">Adatvédelem</a>
+    </nav>
   </div>
+  <div class="wrap foot-copy">© Kemence Akadémia · A workshopokat a Mobilkemence csapata tartja. <span class="latogato" id="latogatoWrap" hidden>· <b id="latogatoSzam"></b> látogatás</span></div>
 </footer>
 
 <!-- Foglalási ablak (alapból rejtve) -->
@@ -383,47 +366,12 @@
   </div>
 </div>
 
-<!-- Ajánlatkérő ablak (rejtve) -->
-<div class="modal" id="ajanlatModal" hidden>
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="aTitle">
-    <button class="modal-close" id="aClose" aria-label="Bezárás">×</button>
-
-    <div id="aFormWrap">
-      <p class="eyebrow">Egyedi ajánlatkérés</p>
-      <h2 id="aTitle" class="m-title">…</h2>
-      <p class="m-meta" id="aMeta">Mondd el a részleteket, és személyre szabott ajánlattal keresünk meg e-mailben.</p>
-
-      <form id="ajanlatForm" novalidate>
-        <label>Név <input name="nev" type="text" autocomplete="name" required></label>
-        <label>E-mail <input name="email" type="email" autocomplete="email" required></label>
-        <label>Telefonszám <input name="telefon" type="tel" autocomplete="tel" required></label>
-        <label>Létszám (fő) <input name="letszam" type="number" min="1" step="1" required></label>
-        <label>Kívánt időpont <input name="kivant_idopont" type="datetime-local" required></label>
-        <label>Mit szeretnél? <span class="opt">(pár mondat)</span> <textarea name="keres_szoveg" rows="3" required></textarea></label>
-        <p class="form-err" id="aErr" hidden></p>
-        <button class="btn" type="submit" id="aSubmit">Ajánlatkérés elküldése</button>
-        <p class="privacy">A beküldéssel elfogadod az <a href="https://kandallo-futar.hu/index.php?id_cms=7&controller=cms" target="_blank" rel="noopener">adatvédelmi tájékoztatót</a>.</p>
-      </form>
-    </div>
-
-    <div class="m-success" id="aSuccess" hidden>
-      <div class="tick">✓</div>
-      <h3>Ajánlatkérésed megkaptuk!</h3>
-      <p>Hamarosan személyre szabott ajánlattal keresünk meg e-mailben. Egy visszaigazolót is küldtünk.</p>
-      <button class="btn ghost" id="aDone">Rendben</button>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <script src="js/util.js" defer></script>
 <script src="js/dialog.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/foglalas.js" defer></script>
-<script src="js/ajanlat.js" defer></script>
-<script src="js/szikrak.js" defer></script>
-<script src="js/reveal.js" defer></script>
 
 </body>
 </html>
