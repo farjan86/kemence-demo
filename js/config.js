@@ -8,5 +8,5 @@
 //  Az "anon" kulcs SZÁNDÉKOSAN publikus — a böngészőbe való, és az RLS
 //  (a biztonsági szabályok) védik az adatot. Nem titok, nyugodtan ide kerülhet.
 // =====================================================================
-window.SUPABASE_URL      = "https://qaamhcnambqsosnadwtn.supabase.co";
-window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhYW1oY25hbWJxc29zbmFkd3RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NzQ5MjQsImV4cCI6MjEwMTA1MDkyNH0.VWPEsOeKOt5iMySmPsYRC1uyKWekPBKCPA5K8Q42oLc";
+window.SUPABASE_URL      = "https://gprhxhrgzpowxxnzdrms.supabase.co";
+window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwcmh4aHJnenBvd3h4bnpkcm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODc5NTEsImV4cCI6MjEwMTc2Mzk1MX0.4Xi6dq-IzKCgOcKycMNootrHnHqfQpMgjUYJQJ2sKXs";
