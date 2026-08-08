@@ -474,7 +474,10 @@ a.btn{display:inline-block; text-decoration:none}
 .nav-btn{display:inline-flex; align-items:center; color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs));
   border-radius:14px; padding:16px 30px; font-family:"Hanken Grotesk",sans-serif; font-weight:700; font-size:17px; flex:none; transition:filter .2s, transform .2s}
 .nav-btn:hover{filter:brightness(1.06); transform:translateY(-1px); color:#231206}
+/* Két fejléc-CTA egymás mellett, azonos stílussal */
+.nav-btnok{display:flex; align-items:center; gap:12px; flex:none}
 @media(max-width:900px){ .site-header .topnav{display:none} }
+@media(max-width:560px){ .nav-btn{padding:12px 16px; font-size:14px} .nav-btnok{gap:8px} }
 
 /* ===================================================================
    LÁBLÉC — nagyobb, a szekciók szélességében; térkép külön a jobb szélen
