@@ -476,16 +476,32 @@ a.btn{display:inline-block; text-decoration:none}
 .nav-btn:hover{filter:brightness(1.06); transform:translateY(-1px); color:#231206}
 /* Két fejléc-CTA egymás mellett, azonos stílussal */
 .nav-btnok{display:flex; align-items:center; gap:12px; flex:none}
-@media(max-width:900px){ .site-header .topnav{display:none} }
-/* MOBIL fejléc: a márka kisebb, a két gomb külön sorba, teljes szélességben */
-@media(max-width:700px){
-  .site-header .nav{height:auto; flex-wrap:wrap; gap:10px 12px; padding:10px 0}
+/* Hamburger gomb — csak mobilon látszik */
+.hamburger{display:none; flex:none; width:46px; height:46px; align-items:center; justify-content:center;
+  background:var(--brick); border:1px solid var(--line); border-radius:12px; color:var(--izzas);
+  font-size:22px; line-height:1; cursor:pointer; transition:border-color .2s}
+.hamburger:hover{border-color:var(--parazs)}
+
+/* MOBIL fejléc (≤900px): kis márka + hamburger egy sorban, a két CTA külön sorban,
+   a menüpontok a hamburgerrel legördülő panelben. */
+@media(max-width:900px){
+  .site-header .nav{height:auto; flex-wrap:wrap; gap:10px 12px; padding:10px 0; position:relative}
   .site-header .brand{gap:10px; margin-right:auto}
   .site-header .brand-badge{width:46px; height:46px; border-radius:12px}
   .site-header .brand-txt strong{font-size:19px}
   .site-header .brand-txt small{font-size:11px}
+  .hamburger{display:inline-flex}
   .nav-btnok{width:100%; gap:10px}
   .nav-btnok .nav-btn{flex:1; justify-content:center; padding:13px 8px; font-size:14.5px}
+
+  /* menüpontok: alapból rejtve; a hamburger nyitja legördülőként */
+  .site-header .topnav{display:none}
+  .site-header.nav-open .topnav{display:flex; flex-direction:column; gap:0;
+    position:absolute; top:100%; left:0; right:0; z-index:50;
+    background:rgba(10,7,4,.98); border:1px solid var(--line); border-radius:0 0 14px 14px;
+    padding:4px 16px; box-shadow:0 22px 44px -20px rgba(0,0,0,.85)}
+  .site-header.nav-open .topnav a{padding:14px 4px; border-bottom:1px solid var(--line); font-size:16px}
+  .site-header.nav-open .topnav a:last-child{border-bottom:0}
 }
 
 /* ===================================================================

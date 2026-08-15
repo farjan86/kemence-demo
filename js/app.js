@@ -195,3 +195,18 @@ async function latogatasSzamlalo(){
 // Indítás — előbb a beállítások (globális szünet), utána a programok
 (async () => { await betoltBeallitasok(); betoltProgramok(); })();
 latogatasSzamlalo();
+
+// -------------------- Mobil menü (hamburger) --------------------
+(function(){
+  const fejlec = document.querySelector(".site-header");
+  const gomb   = document.getElementById("hamburgerBtn");
+  if(!fejlec || !gomb) return;
+  const allit = (nyit) => {
+    fejlec.classList.toggle("nav-open", nyit);
+    gomb.setAttribute("aria-expanded", nyit ? "true" : "false");
+  };
+  gomb.addEventListener("click", () => allit(!fejlec.classList.contains("nav-open")));
+  fejlec.querySelectorAll(".topnav a").forEach(a => a.addEventListener("click", () => allit(false)));
+  document.addEventListener("click", (e) => { if(!fejlec.contains(e.target)) allit(false); });
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape") allit(false); });
+})();
