@@ -174,7 +174,6 @@ a.btn{display:inline-block; text-decoration:none}
 .topnav .nav-cta{color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs));
   padding:8px 15px; border-radius:999px; font-weight:700}
 .topnav .nav-cta:hover{color:#231206; filter:brightness(1.05)}
-@media(max-width:560px){ .topnav a:not(.nav-cta){display:none} }
 
 /* hero — középre zárt banner a kép arányában (teljes kép, vágás nélkül, elmosott szélek) */
 .hero{position:relative; overflow:hidden;
@@ -500,7 +499,7 @@ a.btn{display:inline-block; text-decoration:none}
     position:absolute; top:100%; left:0; right:0; z-index:50;
     background:rgba(10,7,4,.98); border:1px solid var(--line); border-radius:0 0 14px 14px;
     padding:4px 16px; box-shadow:0 22px 44px -20px rgba(0,0,0,.85)}
-  .site-header.nav-open .topnav a{padding:14px 4px; border-bottom:1px solid var(--line); font-size:16px}
+  .site-header.nav-open .topnav a{display:block; padding:14px 4px; border-bottom:1px solid var(--line); font-size:16px}
   .site-header.nav-open .topnav a:last-child{border-bottom:0}
 }
 
