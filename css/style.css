@@ -477,7 +477,16 @@ a.btn{display:inline-block; text-decoration:none}
 /* Két fejléc-CTA egymás mellett, azonos stílussal */
 .nav-btnok{display:flex; align-items:center; gap:12px; flex:none}
 @media(max-width:900px){ .site-header .topnav{display:none} }
-@media(max-width:560px){ .nav-btn{padding:12px 16px; font-size:14px} .nav-btnok{gap:8px} }
+/* MOBIL fejléc: a márka kisebb, a két gomb külön sorba, teljes szélességben */
+@media(max-width:700px){
+  .site-header .nav{height:auto; flex-wrap:wrap; gap:10px 12px; padding:10px 0}
+  .site-header .brand{gap:10px; margin-right:auto}
+  .site-header .brand-badge{width:46px; height:46px; border-radius:12px}
+  .site-header .brand-txt strong{font-size:19px}
+  .site-header .brand-txt small{font-size:11px}
+  .nav-btnok{width:100%; gap:10px}
+  .nav-btnok .nav-btn{flex:1; justify-content:center; padding:13px 8px; font-size:14.5px}
+}
 
 /* ===================================================================
    LÁBLÉC — nagyobb, a szekciók szélességében; térkép külön a jobb szélen
