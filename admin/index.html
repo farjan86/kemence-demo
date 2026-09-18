@@ -43,13 +43,27 @@
   </header>
 
   <main class="wrap">
+    <!-- Fülek csoportosítva: a két üzletág (nyilvános / egyedi) saját színnel, jobb oldalt
+         a közös Naptár és a Beállítások. A fülváltó JS (core.js) csak a .tab gombokat keresi, a csoportok nem zavarják. -->
     <nav class="tabs">
-      <button class="tab active" data-tab="foglalasok">Foglalások</button>
-      <button class="tab" data-tab="naptar">Naptár</button>
-      <button class="tab" data-tab="programok">Programok</button>
-      <button class="tab" data-tab="egyediprogramok">Egyedi programok</button>
-      <button class="tab" data-tab="ajanlatok">Ajánlatok</button>
-      <button class="tab" data-tab="beallitasok">Beállítások</button>
+      <div class="tab-csoport cs-nyilvanos">
+        <span class="tab-csoport-cim">Nyilvános programok</span>
+        <div class="tab-csoport-gombok">
+          <button class="tab active" data-tab="foglalasok">Foglalások</button>
+          <button class="tab" data-tab="programok">Programok</button>
+        </div>
+      </div>
+      <div class="tab-csoport cs-egyedi">
+        <span class="tab-csoport-cim">Egyedi megrendelések</span>
+        <div class="tab-csoport-gombok">
+          <button class="tab" data-tab="ajanlatok">Ajánlatok</button>
+          <button class="tab" data-tab="egyediprogramok">Egyedi programok</button>
+        </div>
+      </div>
+      <div class="tab-jobb">
+        <button class="tab tab-naptar" data-tab="naptar">Naptár</button>
+        <button class="tab tab-beallitas" data-tab="beallitasok"><span aria-hidden="true">⚙</span> Beállítások</button>
+      </div>
     </nav>
 
     <!-- ===== Foglalások fül ===== -->
@@ -308,18 +322,61 @@
         <span class="mezo-cimke">Időpontok <small>(időpontonként: dátum, ár, kedvezményes ár, létszám, korlátok, állapot)</small></span>
         <div id="idopontLista"></div>
         <button type="button" class="btn sm ghost" id="idopontAdd">+ Időpont hozzáadása</button>
+        <p class="ido-info">ℹ️ <b>Min. fő/foglalás</b> és <b>Max. foglalás</b>: opcionális csoportos korlátok, üresen hagyva nincsenek.
+          <button type="button" class="sugo-gomb" id="korlatSugoGomb" title="Hogyan működnek?" aria-label="Hogyan működnek a csoportos korlátok?">?</button></p>
       </div>
       <label>Fotó <small>opcionális</small>
         <input name="foto" id="pFoto" type="file" accept="image/*">
       </label>
       <div id="pFotoElonezet" class="foto-elonezet" hidden><img id="pFotoImg" alt="program fotó"></div>
-      <p class="ido-info">ℹ️ <b>Csoportos korlátok</b> (időpontonként, opcionális): <b>Max. foglalás</b> = hány foglalás (csapat) fogadható erre az időpontra – üresen hagyva korlátlan. <b>Min. fő/foglalás</b> = egy foglalás legalább ennyi fős legyen – üresen hagyva nincs alsó határ. Az időpont automatikusan lezár, ha eléri a max. foglalások számát, vagy ha a maradék szabad hely kevesebb a minimumnál. Foglalás módosításánál a rendszer csak figyelmeztet, nem tilt.</p>
       <p class="form-err" id="pErr" hidden></p>
       <div class="beall-foot">
         <button class="btn" type="submit">Mentés</button>
         <button class="btn ghost" type="button" id="pMegse">Mégse</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Súgó: csoportos korlátok (a program-szerkesztőből nyílik, annak FÖLÖTTE — a szerkesztés nem vész el) -->
+<div class="modal modal-sugo" id="korlatSugo" hidden>
+  <div class="modal-card sugo-card" role="dialog" aria-modal="true" aria-labelledby="ksTitle">
+    <button class="modal-close" type="button" data-sugo-zar aria-label="Bezárás">×</button>
+    <h2 id="ksTitle" class="m-title">Csoportos korlátok</h2>
+    <p>A <b>Min. fő/foglalás</b> és a <b>Max. foglalás</b> időpontonként adható meg. Mindkettő <b>opcionális</b> és <b>független egymástól</b>: bármelyik megadható a másik nélkül. Üresen hagyva az adott korlát nincs.</p>
+    <dl class="sugo-fogalmak">
+      <dt>Min. fő/foglalás</dt>
+      <dd>Egy foglalás legalább ennyi főre szólhat. Kevesebb fővel a foglalási űrlap nem küldhető be.</dd>
+      <dt>Max. foglalás</dt>
+      <dd>Hány foglalás (csapat) jöhet összesen az időpontra, függetlenül attól, hogy egy-egy foglalás hány fős.</dd>
+    </dl>
+
+    <h3>Mikor zár le az időpont?</h3>
+    <p>A nyilvános oldalon nem foglalható, ha az alábbiak közül <b>bármelyik</b> teljesül:</p>
+    <ul>
+      <li>betelt a <b>Max. létszám</b> (férőhely);</li>
+      <li>a foglalások száma elérte a <b>Max. foglalás</b>t;</li>
+      <li>a maradék szabad hely kevesebb a <b>Min. fő/foglalás</b>nál, mert oda már senki nem tudna érvényesen foglalni.</li>
+    </ul>
+    <p class="halvany">A számításban a „jóváhagyásra vár” és a „jóváhagyott” foglalások számítanak.</p>
+
+    <h3>Példák (Max. létszám: 20 fő)</h3>
+    <table class="sugo-tabla">
+      <thead><tr><th>Beállítás</th><th>Mit jelent a gyakorlatban</th></tr></thead>
+      <tbody>
+        <tr><td>csak <b>Min. 8</b></td><td>Bármennyi csapat jöhet, mindegyik legalább 8 fős. Két 8 fős csapat után 4 hely marad, ez kevesebb 8-nál, ezért lezár.</td></tr>
+        <tr><td>csak <b>Max. 2 foglalás</b></td><td>Legfeljebb 2 csapat jöhet, bármekkora. Két 3 fős foglalás után is lezár, pedig 14 hely üres.</td></tr>
+        <tr><td><b>Min. 8 + Max. 2</b></td><td>Legfeljebb 2 csapat, mindegyik legalább 8 fős.</td></tr>
+        <tr><td>csak <b>Max. 1 foglalás</b></td><td>„Zártkörű” alkalom: az első foglalás az egészet lefoglalja.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Jó tudni</h3>
+    <ul>
+      <li><b>A csak „Max. foglalás” pazarló lehet.</b> Max. 1 foglalás mellett egy 2 fős foglalás is lezárja a 20 fős alkalmat. Zártkörű csoportokhoz a minimumot is érdemes megadni.</li>
+      <li><b>Az admin felülbírálhatja a két korlátot.</b> Foglalás módosításakor a minimum alatt a rendszer csak rákérdez, a max. foglalások számát nem ellenőrzi. A férőhelyet (Max. létszám) viszont mindig betartja.</li>
+    </ul>
+    <div class="beall-foot"><button type="button" class="btn" data-sugo-zar>Értem</button></div>
   </div>
 </div>
 

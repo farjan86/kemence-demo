@@ -227,7 +227,7 @@ function naptarHonapHtml(monthProgs){
   return `<div class="honap-nagy">
     <div class="hn-cim">
       <div class="hn-cim-fo"><span class="hn-honap">${HO_NEVEK[naptarHo]}</span><span class="hn-ev">${naptarEv}</span></div>
-      <div class="hn-jelmagy"><span class="jm jm-prog">Program</span><span class="jm jm-unnep">Ünnep</span><span class="jm jm-hetv">Hétvége</span></div>
+      <div class="hn-jelmagy"><span class="jm jm-prog">Program</span><span class="jm jm-ajanlat">Egyedi ajánlat</span><span class="jm jm-unnep">Ünnep</span><span class="jm jm-hetv">Hétvége</span></div>
     </div>
     <div class="hn-fej">${NAP_FEJ.map(n => `<span>${n}</span>`).join("")}</div>
     <div class="hn-racs">${cellak}</div>

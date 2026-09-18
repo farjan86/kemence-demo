@@ -6,6 +6,7 @@
   --line:#3C2A1C; --parazs:#E4571B; --lang:#F59E1B; --lang-2:#FBBF3C;
   --izzas:#FCE9C4; --text:#F1E4D2; --hamu:#B49E86; --hamu-2:#8B7660;
   --ok:#2FA35A; --warn:#E8952B; --bad:#E4726B;
+  --egyedi:#A882DC; --egyedi-2:#C4A6E8;   /* az egyedi megrendelések (ajánlatok) színe */
 }
 *{box-sizing:border-box}
 [hidden]{display:none !important}   /* a hidden attribútum mindig győzzön (a display:flex fölött is) */
@@ -49,13 +50,35 @@ a{color:var(--lang)}
 main.wrap{padding:34px 22px 70px}
 main h2{font-size:28px; margin:0 0 18px}
 
-/* ---- Fülek ---- */
-.tabs{display:flex; gap:4px; margin:0 0 24px; border-bottom:1px solid var(--line)}
+/* ---- Fülek ----
+   Csoportosítva: Nyilvános programok (narancs) · Egyedi megrendelések (lila),
+   jobb oldalt a közös Naptár és a Beállítások. Minden csoport a --akcent színnel húzza alá az aktív fülét. */
+.tabs{display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 0; margin:0 0 24px; border-bottom:1px solid var(--line)}
 .tab{font-family:"Hanken Grotesk"; font-weight:700; font-size:15px; cursor:pointer; color:var(--hamu);
   background:none; border:0; padding:11px 16px; border-bottom:2px solid transparent; margin-bottom:-1px}
-.tab.active{color:var(--izzas); border-bottom-color:var(--parazs)}
+.tab.active{color:var(--izzas); border-bottom-color:var(--akcent, var(--parazs))}
 .tab:hover{color:var(--text)}
 .tab-panel[hidden]{display:none}
+
+.tab-csoport{display:flex; flex-direction:column; --akcent:var(--parazs); --cimszin:var(--lang)}
+.tab-csoport + .tab-csoport{border-left:1px solid var(--line); margin-left:10px; padding-left:10px}
+.tab-csoport-cim{font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--cimszin); padding:0 16px; white-space:nowrap}
+.tab-csoport-gombok{display:flex; gap:4px}
+.cs-egyedi{--akcent:var(--egyedi); --cimszin:var(--egyedi-2)}
+.tab-jobb{display:flex; gap:4px; margin-left:auto}
+/* A Naptár mindkét ágat mutatja → aláhúzása a két szín átmenete */
+.tab-naptar.active{border-bottom-color:transparent;
+  background:linear-gradient(90deg, var(--parazs), var(--egyedi)) left bottom / 100% 2px no-repeat}
+
+@media(max-width:700px){   /* keskeny kijelzőn a csoportok és a gombok is tördelődnek, nem lógnak ki */
+  .tabs{gap:10px 14px}
+  .tab-csoport{max-width:100%}
+  .tab-csoport + .tab-csoport{border-left:0; margin-left:0; padding-left:0}
+  .tab-csoport-gombok{flex-wrap:wrap; gap:0}
+  .tab{padding:9px 10px; font-size:14px}
+  .tab-csoport-cim{padding:0 10px}
+}
 
 /* ---- Beállítás-kártyák ---- */
 .beall-card{background:var(--korom-2); border:1px solid var(--line); border-radius:14px;
@@ -128,6 +151,8 @@ main h2{font-size:28px; margin:0 0 18px}
 .altab{font-family:"Hanken Grotesk"; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--hamu);
   background:var(--brick); border:1px solid var(--line); border-radius:999px; padding:7px 14px}
 .altab.active{color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs)); border-color:transparent}
+[data-panel="ajanlatok"] .altab.active,[data-panel="egyediprogramok"] .altab.active{
+  background:linear-gradient(180deg,var(--egyedi-2),var(--egyedi))}
 .altab:hover:not(.active){color:var(--izzas)}
 .altab .db{font-weight:400; opacity:.75; margin-left:1px}
 .foglalas-fulek{margin-bottom:18px; flex-wrap:wrap}
@@ -287,6 +312,7 @@ main h2{font-size:28px; margin:0 0 18px}
 .jm-prog::before{background:linear-gradient(180deg, var(--lang-2), var(--parazs))}
 .jm-unnep::before{background:rgba(198,58,46,.8)}
 .jm-hetv::before{background:rgba(96,132,176,.55)}
+.jm-ajanlat::before{background:rgba(168,130,220,.7)}
 
 .hn-fej{display:grid; grid-template-columns:repeat(7,1fr); gap:9px; padding:16px 20px 9px}
 .hn-fej span{text-align:center; font-family:"Space Mono",monospace; font-size:11px; letter-spacing:.18em;
@@ -370,6 +396,30 @@ main h2{font-size:28px; margin:0 0 18px}
 .ido-info{font-size:12px; line-height:1.5; color:var(--hamu); background:var(--korom-2);
   border:1px solid var(--line); border-radius:8px; padding:9px 11px; margin:14px 0 0}
 .ido-info b{color:var(--izzas)}
+/* Kerek „?" súgógomb + a csoportos korlátok súgóablaka (a program-szerkesztő fölött nyílik) */
+.sugo-gomb{display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; margin-left:4px;
+  vertical-align:middle; border-radius:50%; border:1px solid var(--lang); background:none; color:var(--lang);
+  font-family:"Hanken Grotesk"; font-weight:700; font-size:12.5px; line-height:1; cursor:pointer}
+.sugo-gomb:hover,.sugo-gomb:focus-visible{background:var(--lang); color:#231206}
+.modal-sugo{z-index:110}
+.sugo-card{max-width:680px; font-size:14px; line-height:1.55}
+.sugo-card p{margin:0 0 10px}
+.sugo-card h3{font-family:"Fraunces"; font-size:17px; color:var(--izzas); margin:20px 0 8px}
+.sugo-card ul{margin:0 0 10px; padding-left:20px}
+.sugo-card li{margin-bottom:4px}
+.sugo-card b{color:var(--izzas)}
+.sugo-fogalmak{margin:12px 0 0; display:grid; grid-template-columns:auto 1fr; gap:6px 14px}
+.sugo-fogalmak dt{font-weight:700; color:var(--lang); white-space:nowrap}
+.sugo-fogalmak dd{margin:0}
+.sugo-tabla{width:100%; border-collapse:collapse; font-size:13.5px; margin-bottom:6px}
+.sugo-tabla th,.sugo-tabla td{text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line)}
+.sugo-tabla th{font-family:"Space Mono",monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--hamu-2)}
+.sugo-tabla td:first-child{white-space:nowrap}
+.sugo-card .beall-foot{justify-content:flex-end; margin-top:16px}
+@media(max-width:560px){
+  .sugo-fogalmak{grid-template-columns:1fr}
+  .sugo-tabla td:first-child{white-space:normal}
+}
 @media(max-width:640px){ .ido-mezok{grid-template-columns:repeat(2,1fr)} }
 
 /* === Program-lista: előadó + időpontok a kártyán === */

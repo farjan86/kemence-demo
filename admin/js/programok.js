@@ -72,6 +72,14 @@ function frissitIdopontokLathatosag(){
   idopontokMezo.hidden = (pStatusz.value !== "aktiv");
 }
 pStatusz.addEventListener("change", frissitIdopontokLathatosag);
+// --- „?" súgó a csoportos korlátokhoz (Min. fő/foglalás, Max. foglalás) ---
+const korlatSugo = document.getElementById("korlatSugo");
+document.getElementById("korlatSugoGomb").addEventListener("click", () => { korlatSugo.hidden = false; });
+korlatSugo.querySelectorAll("[data-sugo-zar]").forEach(b =>
+  b.addEventListener("click", () => { korlatSugo.hidden = true; }));
+korlatSugo.addEventListener("click", e => { if(e.target === korlatSugo) korlatSugo.hidden = true; });   // háttérre kattintás
+document.addEventListener("keydown", e => { if(e.key === "Escape" && !korlatSugo.hidden) korlatSugo.hidden = true; });
+
 document.getElementById("idopontAdd").addEventListener("click", () => {
   idopontLista.insertAdjacentHTML("beforeend", idopontSorHtml());
 });
