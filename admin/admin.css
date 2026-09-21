@@ -66,10 +66,18 @@ main h2{font-size:28px; margin:0 0 18px}
   color:var(--cimszin); padding:0 16px; white-space:nowrap}
 .tab-csoport-gombok{display:flex; gap:4px}
 .cs-egyedi{--akcent:var(--egyedi); --cimszin:var(--egyedi-2)}
-.tab-jobb{display:flex; gap:4px; margin-left:auto}
-/* A Naptár mindkét ágat mutatja → aláhúzása a két szín átmenete */
-.tab-naptar.active{border-bottom-color:transparent;
-  background:linear-gradient(90deg, var(--parazs), var(--egyedi)) left bottom / 100% 2px no-repeat}
+.tab-jobb{display:flex; gap:4px; margin-left:auto; align-self:center}
+/* A Naptár mindkét ágat mutatja, és a napi munka kiindulópontja → hangsúlyos, ikonos gomb */
+.tab-naptar{display:inline-flex; flex-direction:column; align-items:center; gap:4px;
+  padding:8px 22px 9px; margin:0 0 6px; border:1px solid var(--line); border-radius:14px;
+  background:linear-gradient(180deg, var(--brick-2), var(--brick));
+  color:var(--izzas); font-size:14.5px; font-weight:700; line-height:1;
+  box-shadow:0 0 0 1px rgba(245,158,11,.18), 0 6px 18px -10px rgba(0,0,0,.9)}
+.tab-naptar .naptar-ikon{width:28px; height:28px; display:block; color:var(--lang)}
+.tab-naptar.active .naptar-ikon{color:inherit}
+.tab-naptar:hover{color:var(--izzas); border-color:var(--lang); box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+.tab-naptar.active{border-color:transparent; color:#231206;
+  background:linear-gradient(135deg, var(--lang-2), var(--parazs) 58%, var(--egyedi))}
 
 @media(max-width:700px){   /* keskeny kijelzőn a csoportok és a gombok is tördelődnek, nem lógnak ki */
   .tabs{gap:10px 14px}
@@ -80,9 +88,21 @@ main h2{font-size:28px; margin:0 0 18px}
   .tab-csoport-cim{padding:0 10px}
 }
 
+/* ---- Beállítások: három blokk (általános · nyilvános programok · egyedi megrendelések) ----
+   A színek a fülsoréval egyeznek: narancs = nyilvános ág, lila = egyedi ág. */
+.beall-blokk{--akcent:var(--hamu-2); margin:0 0 34px}
+.beall-blokk.cs-nyilvanos{--akcent:var(--lang)}
+.beall-blokk.cs-egyedi{--akcent:var(--egyedi-2)}
+.beall-blokk[hidden]{display:none !important}
+.beall-blokk-leiras{font-size:13px; color:var(--hamu-2); margin:0 0 16px; max-width:1040px}
+/* Az alfül aktív állapota az ág színét viseli (a fülsorral összhangban) */
+.beall-fulek{margin-bottom:18px; flex-wrap:wrap}
+.beall-fulek .altab.cs-egyedi.active{background:linear-gradient(180deg,var(--egyedi-2),var(--egyedi))}
+.beall-blokk > .beall-card{border-left:3px solid var(--akcent)}
+
 /* ---- Beállítás-kártyák ---- */
 .beall-card{background:var(--korom-2); border:1px solid var(--line); border-radius:14px;
-  padding:22px 22px; margin-bottom:20px; max-width:720px}
+  padding:22px 26px; margin-bottom:20px; max-width:1040px}
 .beall-card h3{font-family:"Fraunces"; font-weight:900; font-size:21px; margin:0 0 14px}
 .beall-card label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600; margin-bottom:14px}
 .beall-card label small{color:var(--hamu-2); font-weight:400}
@@ -100,9 +120,10 @@ main h2{font-size:28px; margin:0 0 18px}
 .sablon-form{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
 .sablon-form:first-child{border-top:0; padding-top:0; margin-top:0}
 /* A két sablon-csoport (foglalási vs. ajánlati) vizuális elkülönítése */
-.sablon-csoport-fogl{border-top:3px solid var(--parazs)}
-.sablon-csoport-ajanlat{border-top:3px solid #A882DC}
 .sablon-csoport-ajanlat h3{color:#C4A6E8}
+/* A sablonok törzse hosszú szöveg — bőven kapjon helyet, és húzható legyen */
+.sablon-form textarea{min-height:260px; line-height:1.55}
+.beall-card textarea{resize:vertical}
 .sablon-form h4{font-family:"Fraunces"; font-weight:900; font-size:17px; margin:0 0 12px; color:var(--izzas)}
 
 /* ---- Szerkesztő ablak (modal) ---- */

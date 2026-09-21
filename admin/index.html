@@ -60,9 +60,23 @@
           <button class="tab" data-tab="egyediprogramok">Egyedi programok</button>
         </div>
       </div>
+      <div class="tab-csoport cs-beallitas">
+        <span class="tab-csoport-cim">Rendszer</span>
+        <div class="tab-csoport-gombok">
+          <button class="tab tab-beallitas" data-tab="beallitasok"><span aria-hidden="true">⚙</span> Beállítások</button>
+        </div>
+      </div>
       <div class="tab-jobb">
-        <button class="tab tab-naptar" data-tab="naptar">Naptár</button>
-        <button class="tab tab-beallitas" data-tab="beallitasok"><span aria-hidden="true">⚙</span> Beállítások</button>
+        <button class="tab tab-naptar" data-tab="naptar" title="Naptár — a foglalások és az elfogadott ajánlatok egy helyen">
+          <svg class="naptar-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="3"/>
+            <path d="M3 10h18M8 3v4M16 3v4"/>
+            <circle cx="8.5" cy="14.8" r="1.15" fill="currentColor" stroke="none"/>
+            <circle cx="12" cy="14.8" r="1.15" fill="currentColor" stroke="none"/>
+            <circle cx="15.5" cy="14.8" r="1.15" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>Naptár</span>
+        </button>
       </div>
     </nav>
 
@@ -167,8 +181,18 @@
     <!-- ===== Beállítások fül ===== -->
     <section class="tab-panel" data-panel="beallitasok" hidden>
 
+      <!-- A beállítások három ALFÜLÖN: általános · nyilvános programok · egyedi megrendelések.
+           A színek a fülsor két üzletágával egyeznek (narancs / lila). -->
+      <div class="altabs beall-fulek">
+        <button class="altab active" data-balt="altalanos">Általános</button>
+        <button class="altab cs-nyilvanos" data-balt="nyilvanos">Nyilvános programok</button>
+        <button class="altab cs-egyedi" data-balt="egyedi">Egyedi megrendelések</button>
+      </div>
+
+      <div class="beall-blokk" data-bpanel="altalanos">
+        <p class="beall-blokk-leiras">A csapat elérhetősége és a megjelenés.</p>
+
       <form id="formAltalanos" class="beall-card">
-        <h3>Általános</h3>
         <label>Csapat e-mail cím <small>(ide jönnek a foglalás-értesítők, és ez a válaszcím a vendég-leveleken)</small>
           <input name="levelezesi_email" type="email" required placeholder="pl. akademia@sajatdomain.hu">
         </label>
@@ -184,6 +208,11 @@
         <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
       </form>
 
+      </div><!-- /Általános -->
+
+      <div class="beall-blokk cs-nyilvanos" data-bpanel="nyilvanos" hidden>
+        <p class="beall-blokk-leiras">A meghirdetett programokra érkező foglalások azonosítója és levelei.</p>
+
       <form id="formAzonosito" class="beall-card">
         <h3>Foglalási azonosító formátuma</h3>
         <div class="ket-mezo">
@@ -197,6 +226,19 @@
         <p class="preview">Az első foglalás így nézne ki: <b id="azonPreview">F-100</b></p>
         <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
       </form>
+
+
+      <!-- E-mail sablonok — KÉT külön blokk: foglalási vs. ajánlati -->
+      <div class="beall-card sablon-csoport-fogl">
+        <h3>Foglalási e-mail sablonok</h3>
+        <p class="hint">Behelyettesíthető mezők: <code>{nev}</code> <code>{email}</code> <code>{telefon}</code> <code>{program}</code> <code>{idopont}</code> <code>{letszam}</code> <code>{azonosito}</code></p>
+        <div id="sablonok"><p class="status">Betöltés…</p></div>
+      </div>
+
+      </div><!-- /Nyilvános programok -->
+
+      <div class="beall-blokk cs-egyedi" data-bpanel="egyedi" hidden>
+        <p class="beall-blokk-leiras">Az egyedi ajánlatkérések azonosítója és levelei.</p>
 
       <form id="formAjanlatAzonosito" class="beall-card">
         <h3>Ajánlat-azonosító formátuma</h3>
@@ -212,18 +254,12 @@
         <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
       </form>
 
-      <!-- E-mail sablonok — KÉT külön blokk: foglalási vs. ajánlati -->
-      <div class="beall-card sablon-csoport-fogl">
-        <h3>Foglalási e-mail sablonok</h3>
-        <p class="hint">Behelyettesíthető mezők: <code>{nev}</code> <code>{email}</code> <code>{telefon}</code> <code>{program}</code> <code>{idopont}</code> <code>{letszam}</code> <code>{azonosito}</code></p>
-        <div id="sablonok"><p class="status">Betöltés…</p></div>
-      </div>
-
       <div class="beall-card sablon-csoport-ajanlat">
         <h3>Ajánlati e-mail sablonok</h3>
         <p class="hint">Behelyettesíthető mezők: <code>{nev}</code> <code>{email}</code> <code>{telefon}</code> <code>{program}</code> <code>{azonosito}</code> <code>{letszam}</code> <code>{kivant_idopont}</code> <code>{keres_szoveg}</code> <code>{vegleges_idopont}</code> <code>{vegleges_letszam}</code> <code>{vegleges_ar}</code> <code>{ajanlat_szoveg}</code></p>
         <div id="ajanlatSablonok"><p class="status">Betöltés…</p></div>
       </div>
+      </div><!-- /Egyedi megrendelések -->
 
     </section>
   </main>

@@ -73,12 +73,18 @@ function frissitIdopontokLathatosag(){
 }
 pStatusz.addEventListener("change", frissitIdopontokLathatosag);
 // --- „?" súgó a csoportos korlátokhoz (Min. fő/foglalás, Max. foglalás) ---
-const korlatSugo = document.getElementById("korlatSugo");
-document.getElementById("korlatSugoGomb").addEventListener("click", () => { korlatSugo.hidden = false; });
-korlatSugo.querySelectorAll("[data-sugo-zar]").forEach(b =>
-  b.addEventListener("click", () => { korlatSugo.hidden = true; }));
-korlatSugo.addEventListener("click", e => { if(e.target === korlatSugo) korlatSugo.hidden = true; });   // háttérre kattintás
-document.addEventListener("keydown", e => { if(e.key === "Escape" && !korlatSugo.hidden) korlatSugo.hidden = true; });
+// Védett bekötés: ha a böngésző régi (gyorsítótárazott) index.html-t tölt be, amiben még
+// nincsenek meg ezek az elemek, az NE döntse el az egész fájlt (különben a Programok fül
+// sem töltődne be, mert a betoltProgramLista létre sem jönne).
+const korlatSugo    = document.getElementById("korlatSugo");
+const korlatSugoGmb = document.getElementById("korlatSugoGomb");
+if(korlatSugo && korlatSugoGmb){
+  korlatSugoGmb.addEventListener("click", () => { korlatSugo.hidden = false; });
+  korlatSugo.querySelectorAll("[data-sugo-zar]").forEach(b =>
+    b.addEventListener("click", () => { korlatSugo.hidden = true; }));
+  korlatSugo.addEventListener("click", e => { if(e.target === korlatSugo) korlatSugo.hidden = true; });   // háttérre kattintás
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !korlatSugo.hidden) korlatSugo.hidden = true; });
+}
 
 document.getElementById("idopontAdd").addEventListener("click", () => {
   idopontLista.insertAdjacentHTML("beforeend", idopontSorHtml());
@@ -183,7 +189,16 @@ async function betoltProgramLista(){
       ? `<span class="prog-badge arch">Archivált</span>`
       : (hamarosan ? `<span class="prog-badge soon">Hamarosan</span>` : `<span class="prog-badge aktiv">Aktív</span>`);
     const szunetel = p.foglalas_felfuggesztve || globalisSzunet;   // program-szintű VAGY globális szünet
+    // A főoldal csak a jövőbeli alkalmakat mutatja; enélkül a szünet üzenete sem jelenik meg ott.
+    const vanJovobeli = p.idopontok.some(i => !lezarultNap(i.idopont));
     const szunetJel = szunetel ? `<div class="prog-szunet-jel">Foglalás szünetel</div>` : "";
+    // Ha nincs jövőbeli alkalom, a főoldalon a szünet üzenete helyett az „Új időpontok
+    // egyeztetés alatt" sáv látszik — itt jelezzük, hogy a gombnyomásnak most nincs látható hatása.
+    const szunetMegj = (szunetel && !vanJovobeli && !progArchivNezet)
+      ? `<div class="prog-nincs-ido">A szünet a főoldalon most nem látszik — nincs jövőbeli időpont.</div>`
+      : "";
+    // A főoldalon ilyenkor az „Új időpontok egyeztetés alatt" sáv jelenik meg (archívnál nincs jelentősége).
+    const nincsJovoMegj = (hamarosan || progArchivNezet) ? "" : " — a főoldalon „Új időpontok egyeztetés alatt” felirattal jelenik meg";
     const eloadoSor = p.eloado ? `<div class="prog-eloado">Előadó: ${escapeHtml(p.eloado)}</div>` : "";
 
     const idoSorok = p.idopontok.length
@@ -198,7 +213,8 @@ async function betoltProgramLista(){
             ${elmaradt ? `<span class="arch-jel elmaradt">elmarad</span>` : ""}
           </li>`;
         }).join("") + `</ul>`
-      : `<div class="prog-nincs-ido">Nincs időpont${hamarosan ? "" : " — a főoldalon „Hamarosan”-ként jelenik meg"}.</div>`;
+        + (vanJovobeli || progArchivNezet ? "" : `<div class="prog-nincs-ido">Nincs jövőbeli időpont${nincsJovoMegj}.</div>`)
+      : `<div class="prog-nincs-ido">Nincs időpont${nincsJovoMegj}.</div>`;
 
     const fogo = progArchivNezet ? "" : `<span class="drag-fogo" title="Húzd a sorrend átrendezéséhez">⠿</span>`;
     const foglSzam = progFoglalasSzam.get(p.id) || 0;
@@ -214,7 +230,7 @@ async function betoltProgramLista(){
     }
 
     return `<article class="prog-kartya${szunetel ? " szunetel" : ""}" data-id="${p.id}">
-      ${szunetJel}
+      ${szunetJel}${szunetMegj}
       <div class="fej"><span class="fej-cim">${fogo}<h4>${escapeHtml(p.cim)}</h4></span>${badge}</div>
       ${eloadoSor}
       <p class="leiras">${tisztitHtml(p.rovid_leiras || p.leiras || "")}</p>

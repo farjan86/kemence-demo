@@ -106,7 +106,7 @@ async function betoltSablonok(){
     <form class="sablon-form" data-tipus="${s.tipus}">
       <h4>${SABLON_CIMKE[s.tipus] || s.tipus}</h4>
       <label>Tárgy <input name="targy" value="${escapeHtml(s.targy)}"></label>
-      <label>Törzsszöveg <textarea name="torzs" rows="6">${escapeHtml(s.torzs)}</textarea></label>
+      <label>Törzsszöveg <textarea name="torzs" rows="14">${escapeHtml(s.torzs)}</textarea></label>
       <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
     </form>`).join("");
   cel.querySelectorAll(".sablon-form").forEach(f => f.addEventListener("submit", mentSablon));
@@ -138,7 +138,7 @@ async function betoltAjSablonok(){
     <form class="sablon-form" data-tipus="${s.tipus}">
       <h4>${AJ_SABLON_CIMKE[s.tipus] || s.tipus}</h4>
       <label>Tárgy <input name="targy" value="${escapeHtml(s.targy)}"></label>
-      <label>Törzsszöveg <textarea name="torzs" rows="6">${escapeHtml(s.torzs)}</textarea></label>
+      <label>Törzsszöveg <textarea name="torzs" rows="14">${escapeHtml(s.torzs)}</textarea></label>
       <div class="beall-foot"><button class="btn" type="submit">Mentés</button><span class="mentve" hidden>Mentve ✓</span></div>
     </form>`).join("");
   cel.querySelectorAll(".sablon-form").forEach(f => f.addEventListener("submit", mentAjSablon));
@@ -151,3 +151,10 @@ async function mentAjSablon(e){
   }).eq("tipus", f.dataset.tipus);
   mentesVisszajelzes(f, error);
 }
+
+// -------------------- Alfülek (Általános / Nyilvános programok / Egyedi megrendelések) --------------------
+// Csak megjelenítés: a három blokk közül mindig egy látszik. A mentés-logika változatlan.
+document.querySelectorAll(".beall-fulek .altab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".beall-fulek .altab").forEach(x => x.classList.toggle("active", x === t));
+  document.querySelectorAll("[data-bpanel]").forEach(p => p.hidden = (p.dataset.bpanel !== t.dataset.balt));
+}));

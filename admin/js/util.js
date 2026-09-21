@@ -68,6 +68,15 @@ function tisztitTelefon(v){
 const telefonOk = s => /^\+?\d{8,15}$/.test(s);
 
 // -------- HTML --------
+// Lezárult-e az időpont? A NAP számít: a mai nap még foglalható, a korábbiak nem.
+// (Ugyanaz a szabály, mint a publikus oldalon — web/js/util.js › lezarultNap.)
+function lezarultNap(iso){
+  if(!iso) return false;
+  const d = new Date(iso), most = new Date();
+  const esemenyNap = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const maNap      = new Date(most.getFullYear(), most.getMonth(), most.getDate());
+  return esemenyNap < maNap;
+}
 function escapeHtml(s){
   return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;")
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
