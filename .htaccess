@@ -1,0 +1,50 @@
+# =====================================================================
+#  Kemence Akadémia — webszerver-beállítások (Apache / LiteSpeed, Hostinger)
+#
+#  Ez a fájl a WEBGYÖKÉRBE kerül (public_html), az index.html mellé —
+#  a web/ mappa tartalmával együtt töltsd fel.
+#  Csak Apache/LiteSpeed alatt él; a Cloudflare figyelmen kívül hagyja.
+# =====================================================================
+
+# ---------------------------------------------------------------------
+#  A RÉGI oldal megszűnt aloldalai → főoldal (404 helyett)
+#  A régi kemence-akademia.xyz-en ez a három aloldal létezett; a korábbi
+#  linkek és a Google találatai így nem futnak zsákutcába.
+# ---------------------------------------------------------------------
+Redirect 301 /pizza-akademia.html  /
+Redirect 301 /burek-akademia.html  /
+Redirect 301 /kenyer-akademia.html /
+
+# ---------------------------------------------------------------------
+#  Mappák tartalma ne legyen böngészhető (pl. /kepek/ listázása)
+# ---------------------------------------------------------------------
+Options -Indexes
+
+# ---------------------------------------------------------------------
+#  Alapértelmezett karakterkódolás
+# ---------------------------------------------------------------------
+AddDefaultCharset utf-8
+
+# ---------------------------------------------------------------------
+#  Gyorsítótár
+#  A JS/CSS fájlok neve NEM tartalmaz verziószámot, ezért nem szabad őket
+#  hosszan gyorsítótárazni: frissítés után a látogató a régit kapná.
+#  A képeket is ugyanazon a néven cseréljük (lásd kézikönyv), ezért azok
+#  is csak 1 napig maradnak a böngészőben.
+# ---------------------------------------------------------------------
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|css)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(jpg|jpeg|png|webp|gif|svg|ico|woff|woff2)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
+
+# ---------------------------------------------------------------------
+#  HTTPS kényszerítése — CSAK akkor vedd ki a kommentből, ha a hPanel
+#  „Force HTTPS" kapcsolója nincs bekapcsolva (különben kétszeres átirányítás).
+# ---------------------------------------------------------------------
+# RewriteEngine On
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

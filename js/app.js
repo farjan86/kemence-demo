@@ -68,14 +68,22 @@ function kartya(p){
     .filter(i => !lezarultNap(i.idopont))
     .sort((a, b) => new Date(a.idopont) - new Date(b.idopont));
 
-  // „Hamarosan": ha a program hamarosan-státuszú, vagy nincs jövőbeli időpont.
+  // Nem foglalható kártya — KÉT eset, külön felirattal:
+  //   • „hamarosan" státuszú program → még csak beharangozzuk (nincs is időpontja);
+  //   • aktív program, de minden időpontja lejárt → új dátumok egyeztetés alatt.
   if(p.program_statusz === "hamarosan" || jovo.length === 0){
+    const ujProgram = (p.program_statusz === "hamarosan");
+    // A rövid „Hamarosan" elfér jelvényként a cím mellett; a hosszabb üzenet
+    // a kártya alján fut végig (mint a szünet-sáv), hogy ne nyomja szét a címet.
+    const jelveny = ujProgram ? `<span class="badge soon">Hamarosan</span>` : "";
+    const sav     = ujProgram ? "" : `<div class="szunet-sav">Új időpontok egyeztetés alatt</div>`;
     return `<article class="card">
       ${kep}
-      <div class="card-top"><h3>${p.cim}</h3><span class="badge soon">Hamarosan</span></div>
+      <div class="card-top"><h3>${p.cim}</h3>${jelveny}</div>
       ${eloadoHtml}
       <p class="desc">${rovid}</p>
       ${reszlet}
+      ${sav}
     </article>`;
   }
 
