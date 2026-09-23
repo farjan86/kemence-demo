@@ -109,7 +109,7 @@ idopontLista.addEventListener("click", async (e) => {
   if(osszes > 0){
     // Csak LEZÁRT (lemondott/elutasított) foglalás(ok), élő nincs → törölhető, de azok a rekordok is törlődnek (pucolás).
     const ok = await dialog.megerosit(
-      `Ehhez az időponthoz ${osszes} lezárt (lemondott/elutasított) foglalás tartozik. Az időpont törlésével ezek a foglalások is VÉGLEGESEN törlődnek — az előzményből (analitikából) is eltűnnek.\n\nBiztos így szeretnéd? Ha nem, inkább állítsd az időpontot „Elmarad” státuszra — akkor a foglalások megmaradnak.`,
+      `Ehhez az időponthoz ${osszes} lezárt (lemondott/elutasított) foglalás tartozik. Az időpont törlésével ezek a foglalások is VÉGLEGESEN törlődnek: az előzményekből és a Partnerek listájából is eltűnnek, így később már nem látszik, hogy ezek a partnerek jártak nálatok.\n\nBiztos így szeretnéd? Ha nem, inkább állítsd az időpontot „Elmarad” státuszra — akkor a foglalások megmaradnak.`,
       { cim:"Lezárt foglalások törlése", okCimke:"Igen, töröljük", megseCimke:"Mégse", veszelyes:true });
     if(!ok) return;
     torlesLezarttal.add(idId);   // a mentéskori törlés előbb a lezárt foglalásokat törli

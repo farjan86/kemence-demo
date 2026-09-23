@@ -77,6 +77,11 @@ function lezarultNap(iso){
   const maNap      = new Date(most.getFullYear(), most.getMonth(), most.getDate());
   return esemenyNap < maNap;
 }
+// Számlázási cím egy sorban: „1075 Budapest, Király utca 12.” — üres tagokat kihagyja.
+function cimSzoveg(x){
+  const eleje = [x.iranyitoszam, x.helyseg].filter(Boolean).join(" ");
+  return [eleje, x.cim_tovabbi].filter(Boolean).map(escapeHtml).join(", ");
+}
 function escapeHtml(s){
   return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;")
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;");

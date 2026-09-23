@@ -19,12 +19,19 @@ let globalisSzunet = false;   // settings.foglalas_szunet — „minden foglalá
 // (Sima szövegként jelenítjük meg — textContent — a biztonság miatt.)
 async function betoltBeallitasok(){
   const { data } = await db.from("settings")
-    .select("foglalas_infosav, foglalas_szunet").eq("id", 1).maybeSingle();
+    .select("foglalas_infosav, ajanlat_infosav, foglalas_szunet").eq("id", 1).maybeSingle();
   if(data){
     globalisSzunet = !!data.foglalas_szunet;
     if(data.foglalas_infosav){
       const el = document.getElementById("mInfosav");
       if(el) el.textContent = data.foglalas_infosav;
+    }
+    // Az ajánlatkérő űrlap info-sávja: csak akkor látszik, ha van beállítva szöveg.
+    const aEl = document.getElementById("aInfosav");
+    if(aEl){
+      const szoveg = (data.ajanlat_infosav || "").trim();
+      aEl.textContent = szoveg;
+      aEl.hidden = !szoveg;
     }
   }
 }

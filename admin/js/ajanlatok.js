@@ -199,7 +199,7 @@ async function torolAjanlat(id){
   const a = osszesAjanlat.find(x => x.id === id);
   if(!a || !(a.statusz === "elutasitva" || a.statusz === "lemondva")) return;
   const ok = await dialog.megerosit(
-    `Véglegesen törlöd ezt a lezárt ajánlatot?\n\n${azonAjanlat(a.azonosito)} · ${a.nev} · ${STAT_AJANLAT[a.statusz]?.szoveg || a.statusz}\n\nEz nem vonható vissza.`,
+    `Véglegesen törlöd ezt a lezárt ajánlatot?\n\n${azonAjanlat(a.azonosito)} · ${a.nev} · ${STAT_AJANLAT[a.statusz]?.szoveg || a.statusz}\n\nEz nem vonható vissza: az ajánlat az előzményekből és a Partnerek listájából is eltűnik, így később már nem látszik, hogy ez a partner kért tőletek ajánlatot.`,
     { cim:"Ajánlat törlése", okCimke:"Törlés", veszelyes:true });
   if(!ok) return;
   const { error } = await db.from("ajanlatok").delete().eq("id", id);
@@ -301,8 +301,9 @@ function nyitAjReszlet(id){
 
   const ujsor = s => (s ? escapeHtml(s).replace(/\n/g, "<br>") : "—");
   const sorok = [
-    `<p><b>Ötlet:</b> ${a._programCim ? escapeHtml(a._programCim) : "Általános megkeresés"}</p>`,
+    `<p><b>Egyedi program:</b> ${a._programCim ? escapeHtml(a._programCim) : "Általános megkeresés"}</p>`,
     `<p><b>Vendég:</b> ${escapeHtml(a.nev)} · ${escapeHtml(a.telefon||"")} · ${escapeHtml(a.email||"")}</p>`,
+    `<p><b>Számlázási cím:</b> ${cimSzoveg(a) || "—"}</p>`,
     `<p><b>Kért létszám:</b> ${a.letszam ? a.letszam + " fő" : "—"} · <b>Kívánt időpont:</b> ${a.kivant_idopont ? formatDatum(a.kivant_idopont) : "—"}</p>`,
     `<p><b>Üzenet:</b><br>${ujsor(a.keres_szoveg)}</p>`,
     `<p><b>Beérkezett:</b> ${formatDatum(a.created_at)} · <b>Státusz:</b> ${STAT_AJANLAT[a.statusz]?.szoveg || a.statusz}</p>`,
@@ -321,6 +322,9 @@ function nyitAjReszlet(id){
   }
   document.getElementById("ajReszTartalom").innerHTML = sorok.join("");
   ajJegyzetForm.belso_jegyzet.value = a.belso_jegyzet || "";
+  ajJegyzetForm.iranyitoszam.value  = a.iranyitoszam || "";
+  ajJegyzetForm.helyseg.value       = a.helyseg || "";
+  ajJegyzetForm.cim_tovabbi.value   = a.cim_tovabbi || "";
 
   const letolt = document.getElementById("ajCsatLetolt");
   if(letolt) letolt.addEventListener("click", async () => {
@@ -339,14 +343,19 @@ function nyitAjReszlet(id){
 ajJegyzetForm.addEventListener("submit", async e => {
   e.preventDefault();
   if(!ajReszAktualis) return;
-  const jegyzet = ajJegyzetForm.belso_jegyzet.value.trim() || null;
+  const jegyzet      = ajJegyzetForm.belso_jegyzet.value.trim() || null;
+  const iranyitoszam = ajJegyzetForm.iranyitoszam.value.trim() || null;
+  const helyseg      = ajJegyzetForm.helyseg.value.trim() || null;
+  const cim_tovabbi  = ajJegyzetForm.cim_tovabbi.value.trim() || null;
   const gomb = ajJegyzetForm.querySelector('button[type="submit"]');
   gomb.disabled = true;
-  const { error } = await db.from("ajanlatok").update({ belso_jegyzet: jegyzet }).eq("id", ajReszAktualis.id);
+  const { error } = await db.from("ajanlatok")
+    .update({ belso_jegyzet: jegyzet, iranyitoszam, helyseg, cim_tovabbi })
+    .eq("id", ajReszAktualis.id);
   gomb.disabled = false;
-  if(error) return dialog.uzen("A jegyzet mentése nem sikerült: " + error.message, { cim:"Hiba" });
-  ajReszAktualis.belso_jegyzet = jegyzet;
-  dialog.uzen("Jegyzet mentve.", { cim:"Mentve ✓" });
+  if(error) return dialog.uzen("A mentés nem sikerült: " + error.message, { cim:"Hiba" });
+  Object.assign(ajReszAktualis, { belso_jegyzet: jegyzet, iranyitoszam, helyseg, cim_tovabbi });
+  dialog.uzen("Mentve.", { cim:"Mentve ✓" });
 });
 
 document.getElementById("ajReszClose").addEventListener("click", () => { ajReszModal.hidden = true; });
@@ -424,12 +433,13 @@ function mutatAjLevelek(id){
 }
 
 // ==================== Excel-export (a jelenlegi szűrt nézet) ====================
-const AJ_EXPORT_FEJ = ["Azonosító","Program/ötlet","Vendég","Telefon","E-mail","Kért fő","Kívánt időpont","Státusz","Végleges időpont","Végleges fő","Végleges összár (Ft)"];
+const AJ_EXPORT_FEJ = ["Azonosító","Egyedi program","Vendég","Telefon","E-mail","Irányítószám","Helység","További címadat","Kért fő","Kívánt időpont","Státusz","Végleges időpont","Végleges fő","Végleges összár (Ft)"];
 function ajExportSorok(){
   return ajSzurt().map(a => [
     azonAjanlat(a.azonosito),
     a._programCim || "Általános",
     a.nev || "", a.telefon || "", a.email || "",
+    a.iranyitoszam || "", a.helyseg || "", a.cim_tovabbi || "",
     a.letszam ?? "",
     a.kivant_idopont ? formatDatum(a.kivant_idopont) : "",
     STAT_AJANLAT[a.statusz]?.szoveg || a.statusz,

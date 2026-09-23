@@ -31,6 +31,7 @@ async function betoltBeallitasokUrlap(){
   const fA = document.getElementById("formAltalanos");
   fA.levelezesi_email.value = data.levelezesi_email ?? "";
   fA.foglalas_infosav.value = data.foglalas_infosav ?? "";
+  fA.ajanlat_infosav.value  = data.ajanlat_infosav ?? "";
   fA.naptar_nezet.value     = data.naptar_nezet ?? "lista";
   fZ.azonosito_elotag.value = data.azonosito_elotag ?? "F-";
   fZ.azonosito_kezdo.value  = data.azonosito_kezdo ?? 100;
@@ -46,6 +47,7 @@ document.getElementById("formAltalanos").addEventListener("submit", async e => {
   const { error } = await db.from("settings").update({
     levelezesi_email: f.levelezesi_email.value.trim() || null,
     foglalas_infosav: f.foglalas_infosav.value.trim() || null,
+    ajanlat_infosav:  f.ajanlat_infosav.value.trim() || null,
     naptar_nezet: f.naptar_nezet.value,
     updated_at: new Date().toISOString(),
   }).eq("id", 1);

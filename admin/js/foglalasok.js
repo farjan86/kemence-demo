@@ -141,7 +141,7 @@ async function torolFoglalas(id){
   if(!b) return;
   if(b.statusz !== "lemondott" && b.statusz !== "elutasitott") return;   // biztonság: csak lezártnál
   const ok = await dialog.megerosit(
-    `Véglegesen törlöd ezt a lezárt foglalást?\n\n${azon(b.azonosito)} · ${b.nev} · ${STAT[b.statusz]?.szoveg || b.statusz}\n\nEz nem vonható vissza, és eltűnik az előzményekből is.`,
+    `Véglegesen törlöd ezt a lezárt foglalást?\n\n${azon(b.azonosito)} · ${b.nev} · ${STAT[b.statusz]?.szoveg || b.statusz}\n\nEz nem vonható vissza: a foglalás az előzményekből és a Partnerek listájából is eltűnik, így később már nem látszik, hogy ez a partner járt nálatok.`,
     { cim:"Foglalás törlése", okCimke:"Törlés", veszelyes:true });
   if(!ok) return;
   const { error } = await db.from("bookings").delete().eq("id", id);
@@ -150,7 +150,7 @@ async function torolFoglalas(id){
 }
 
 // ==================== Export (Excel) ====================
-const EXPORT_FEJ = ["Azonosító","Program","Program időpontja","Időállapot","Vendég neve","Telefon","E-mail","Fő","Státusz","Megjegyzés"];
+const EXPORT_FEJ = ["Azonosító","Program","Program időpontja","Időállapot","Vendég neve","Telefon","E-mail","Irányítószám","Helység","További címadat","Fő","Státusz","Megjegyzés"];
 function exportSorok(){
   return szurtLista().map(b => [
     azon(b.azonosito),
@@ -160,6 +160,9 @@ function exportSorok(){
     b.nev ?? "",
     b.telefon ?? "",
     b.email ?? "",
+    b.iranyitoszam ?? "",
+    b.helyseg ?? "",
+    b.cim_tovabbi ?? "",
     b.letszam ?? "",
     STAT[b.statusz]?.szoveg ?? b.statusz,
     b.megjegyzes ?? ""
@@ -179,7 +182,8 @@ async function exportExcel(){
     await loadScript("https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js");
     const adat = [EXPORT_FEJ, ...exportSorok()];
     const ws = XLSX.utils.aoa_to_sheet(adat);
-    ws["!cols"] = EXPORT_FEJ.map((h, i) => ({ wch: i === 1 ? 28 : i === 9 ? 40 : Math.max(12, h.length + 2) }));
+    // 1 = Program, 9 = További címadat, 12 = Megjegyzés — ezek kapnak szélesebb oszlopot
+    ws["!cols"] = EXPORT_FEJ.map((h, i) => ({ wch: i === 1 ? 28 : i === 12 ? 40 : i === 9 ? 30 : Math.max(12, h.length + 2) }));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Foglalások");
     XLSX.writeFile(wb, exportFajlnev() + ".xlsx");
@@ -369,6 +373,9 @@ async function nyitSzerkeszto(id){
   szerkForm.telefon.value    = b.telefon;
   szerkForm.letszam.value    = b.letszam;
   szerkForm.megjegyzes.value = b.megjegyzes || "";
+  szerkForm.iranyitoszam.value = b.iranyitoszam || "";
+  szerkForm.helyseg.value      = b.helyseg || "";
+  szerkForm.cim_tovabbi.value  = b.cim_tovabbi || "";
   szerkForm.dataset.id = id;
   szerkModal.hidden = false;
   szerkForm.nev.focus();
@@ -384,6 +391,10 @@ szerkForm.addEventListener("submit", async e => {
   const letszam    = parseInt(szerkForm.letszam.value, 10);
   const idopont_id = szProgram.value;
   const megjegyzes = szerkForm.megjegyzes.value.trim();
+  // Számlázási cím — az adminban NEM kötelező (régi foglalásoknál nincs is adat)
+  const iranyitoszam = szerkForm.iranyitoszam.value.trim();
+  const helyseg      = szerkForm.helyseg.value.trim();
+  const cim_tovabbi  = szerkForm.cim_tovabbi.value.trim();
 
   if(!nev)                return szHiba("A név nem lehet üres.");
   if(!emailOk(email))     return szHiba("Érvényes e-mail címet adj meg.");
@@ -403,6 +414,9 @@ szerkForm.addEventListener("submit", async e => {
   gomb.disabled = true;
   const { error } = await db.from("bookings").update({
     idopont_id, nev, email, telefon, letszam, megjegyzes: megjegyzes || null,
+    iranyitoszam: iranyitoszam || null,
+    helyseg:      helyseg      || null,
+    cim_tovabbi:  cim_tovabbi  || null,
   }).eq("id", id);
   gomb.disabled = false;
 

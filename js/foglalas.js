@@ -72,6 +72,10 @@ formEl.addEventListener("submit", async (e) => {
   const telefon    = tisztitTelefon(formEl.telefon.value);   // normalizált (+36..)
   const letszam    = parseInt(formEl.letszam.value, 10);
   const megjegyzes = formEl.megjegyzes.value.trim();
+  // Számlázási cím (mindhárom kötelező; a szerver is ellenőrzi)
+  const iranyitoszam = formEl.iranyitoszam.value.trim();
+  const helyseg      = formEl.helyseg.value.trim();
+  const cim_tovabbi  = formEl.cim_tovabbi.value.trim();
 
   // Ellenőrzések — hibás adattal nem küldhető el
   if(lezarultNap(aktualisIdopont.idopont))
@@ -92,6 +96,9 @@ formEl.addEventListener("submit", async (e) => {
     return hiba(`Erre az időpontra legalább ${aktualisIdopont.min_letszam} fős foglalás szükséges.`, formEl.letszam);
   if(letszam > aktualisIdopont.szabad_helyek)
     return hiba(`Csak ${aktualisIdopont.szabad_helyek} szabad hely van.`, formEl.letszam);
+  if(!iranyitoszam) return hiba("Kérlek add meg az irányítószámot.", formEl.iranyitoszam);
+  if(!helyseg)      return hiba("Kérlek add meg a helységet.", formEl.helyseg);
+  if(!cim_tovabbi)  return hiba("Kérlek add meg a további címadatot.", formEl.cim_tovabbi);
 
   submitBtn.disabled = true; submitBtn.textContent = "Küldés…";
 
@@ -99,6 +106,7 @@ formEl.addEventListener("submit", async (e) => {
   const { error } = await db.from("bookings").insert({   // db: app.js
     idopont_id: aktualisIdopont.idopont_id,
     nev, email, telefon, letszam,
+    iranyitoszam, helyseg, cim_tovabbi,
     megjegyzes: megjegyzes || null
   });
 

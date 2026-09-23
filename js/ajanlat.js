@@ -1,7 +1,7 @@
 // =====================================================================
 //  Kemence Akadémia — EGYEDI PROGRAMOK + AJÁNLATKÉRÉS (publikus)
 //  A FOGLALÁSTÓL FÜGGETLEN ág: az egyedi_programok táblát olvassa
-//  (időpont nélküli „ötlet"-kártyák), és ajánlatkérést ír az ajanlatok
+//  (időpont nélküli egyedi program-kártyák), és ajánlatkérést ír az ajanlatok
 //  táblába. A közös `db`-t és a util.js segédeit használja (app.js után
 //  töltődik). A „Részletek" a meglévő reszletModal-t hasznosítja újra.
 // =====================================================================
@@ -100,6 +100,10 @@ aForm.addEventListener("submit", async (e) => {
   const kivantRaw = aForm.kivant_idopont.value;
   const kivant    = kivantRaw ? new Date(kivantRaw).toISOString() : null;  // helyi idő → UTC
   const keres     = aForm.keres_szoveg.value.trim();
+  // Számlázási cím (mindhárom kötelező; a szerver is ellenőrzi)
+  const iranyitoszam = aForm.iranyitoszam.value.trim();
+  const helyseg      = aForm.helyseg.value.trim();
+  const cim_tovabbi  = aForm.cim_tovabbi.value.trim();
 
   // Minden mező KÖTELEZŐ ezen a formon (név + e-mail + telefon + létszám + időpont + üzenet).
   if(!nev)            return aHiba("Kérlek add meg a neved.", aForm.nev);
@@ -115,6 +119,9 @@ aForm.addEventListener("submit", async (e) => {
   if(!telefonOk(telefon)) return aHiba("Érvényes telefonszámot adj meg.", aForm.telefon);
   if(!(letszam >= 1))     return aHiba("Kérlek add meg a létszámot (legalább 1 fő).", aForm.letszam);
   if(!kivantRaw)          return aHiba("Kérlek add meg a kívánt időpontot.", aForm.kivant_idopont);
+  if(!iranyitoszam)       return aHiba("Kérlek add meg az irányítószámot.", aForm.iranyitoszam);
+  if(!helyseg)            return aHiba("Kérlek add meg a helységet.", aForm.helyseg);
+  if(!cim_tovabbi)        return aHiba("Kérlek add meg a további címadatot.", aForm.cim_tovabbi);
   if(!keres)              return aHiba("Kérlek írd le pár mondatban, mit szeretnél.", aForm.keres_szoveg);
 
   aSubmit.disabled = true; aSubmit.textContent = "Küldés…";
@@ -124,6 +131,7 @@ aForm.addEventListener("submit", async (e) => {
     egyedi_program_id: aAktualisProgram ? aAktualisProgram.id : null,
     nev, email, telefon,
     letszam,
+    iranyitoszam, helyseg, cim_tovabbi,
     kivant_idopont: kivant,
     keres_szoveg: keres || null
   });

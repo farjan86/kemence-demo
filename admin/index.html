@@ -67,6 +67,14 @@
         </div>
       </div>
       <div class="tab-jobb">
+        <button class="tab tab-naptar tab-partnerek" data-tab="partnerek" title="Partnerek — mindenki, aki foglalt vagy ajánlatot kért">
+          <svg class="naptar-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="8" r="3.2"/>
+            <path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/>
+            <path d="M16.5 6.4a3 3 0 0 1 0 5.6M18.2 14.8c2 .7 3.3 2.4 3.3 4.7"/>
+          </svg>
+          <span>Partnerek</span>
+        </button>
         <button class="tab tab-naptar" data-tab="naptar" title="Naptár — a foglalások és az elfogadott ajánlatok egy helyen">
           <svg class="naptar-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
             <rect x="3" y="5" width="18" height="16" rx="3"/>
@@ -178,6 +186,31 @@
       <div id="ajanlatok"><p class="status">Betöltés…</p></div>
     </section>
 
+    <!-- ===== Partnerek fül ===== -->
+    <section class="tab-panel" data-panel="partnerek" hidden>
+      <div class="partner-fejlec">
+        <div class="partner-szurok">
+          <label>Időszak
+            <span class="partner-datumok">
+              <input type="date" id="pSzurTol" aria-label="Időszak kezdete">
+              <span class="partner-kotojel">–</span>
+              <input type="date" id="pSzurIg" aria-label="Időszak vége">
+            </span>
+          </label>
+          <label class="partner-kapcsolo">
+            <input type="checkbox" id="pCsakMegvalosult">
+            <span>Csak megvalósult alkalmak <small>(jóváhagyott foglalás, elfogadott ajánlat)</small></span>
+          </label>
+        </div>
+        <div class="export-gombok">
+          <button type="button" class="btn sm ghost" id="pSzurTorles" hidden title="Minden kereső és szűrő alaphelyzetbe">✕ Szűrők törlése</button>
+          <button type="button" class="btn sm ghost" id="pExportExcel" title="A jelenleg látott lista letöltése Excelbe">📊 Excel</button>
+        </div>
+      </div>
+      <p class="partner-info" id="pOsszegzes"></p>
+      <div id="partnerLista"><p class="status">Betöltés…</p></div>
+    </section>
+
     <!-- ===== Beállítások fül ===== -->
     <section class="tab-panel" data-panel="beallitasok" hidden>
 
@@ -196,8 +229,11 @@
         <label>Csapat e-mail cím <small>(ide jönnek a foglalás-értesítők, és ez a válaszcím a vendég-leveleken)</small>
           <input name="levelezesi_email" type="email" required placeholder="pl. akademia@sajatdomain.hu">
         </label>
-        <label>Foglalási info-sáv <small>(a foglalási űrlapon jelenik meg)</small>
+        <label>Foglalási info-sáv <small>(a foglalási űrlap tetején jelenik meg a vendégnek)</small>
           <textarea name="foglalas_infosav" rows="3"></textarea>
+        </label>
+        <label>Ajánlatkérési info-sáv <small>(az ajánlatkérő űrlap tetején; üresen hagyva nem jelenik meg)</small>
+          <textarea name="ajanlat_infosav" rows="3"></textarea>
         </label>
         <label>Naptár megjelenítése <small>(az admin Naptár fülén)</small>
           <select name="naptar_nezet">
@@ -282,6 +318,13 @@
         <label>E-mail <input name="email" type="email" required></label>
         <label>Telefon <input name="telefon" type="tel" required></label>
       </div>
+      <div class="ket-mezo">
+        <label>Irányítószám <input name="iranyitoszam" type="text" maxlength="20"></label>
+        <label>Helység <input name="helyseg" type="text" maxlength="100"></label>
+      </div>
+      <label>További címadat <small>(kerület, utca, házszám, stb.)</small>
+        <input name="cim_tovabbi" type="text" maxlength="200">
+      </label>
       <label>Megjegyzés <textarea name="megjegyzes" rows="2"></textarea></label>
       <p class="form-err" id="szErr" hidden></p>
       <div class="beall-foot">
@@ -499,12 +542,23 @@
     <button class="modal-close" id="ajReszClose" aria-label="Bezárás">×</button>
     <h2 id="ajReszCim" class="m-title">Ajánlatkérés</h2>
     <div id="ajReszTartalom" class="aj-reszlet"></div>
+    <div class="aj-szerk-fejlec">
+      <span class="aj-szerk-cim">Szerkeszthető</span>
+      <span class="aj-szerk-alcim">számlázási cím és belső jegyzet — a vendég beküldött kérését nem írjuk át</span>
+    </div>
     <form id="ajJegyzetForm" class="mform">
+      <div class="ket-mezo">
+        <label>Irányítószám <input name="iranyitoszam" type="text" maxlength="20"></label>
+        <label>Helység <input name="helyseg" type="text" maxlength="100"></label>
+      </div>
+      <label>További címadat <small>(kerület, utca, házszám, stb.)</small>
+        <input name="cim_tovabbi" type="text" maxlength="200">
+      </label>
       <label>Belső jegyzet <small>(privát — a vendég sosem látja)</small>
         <textarea name="belso_jegyzet" rows="3"></textarea>
       </label>
       <div class="beall-foot">
-        <button class="btn" type="submit">Jegyzet mentése</button>
+        <button class="btn" type="submit">Mentés</button>
         <button class="btn ghost" type="button" id="ajReszMegse">Bezárás</button>
       </div>
     </form>
@@ -541,6 +595,7 @@
 <script src="js/egyediprogramok.js" defer></script>
 <script src="js/ajanlatok.js" defer></script>
 <script src="js/naptar.js" defer></script>
+<script src="js/partnerek.js" defer></script>
 <script src="js/beallitasok.js" defer></script>
 </body>
 </html>

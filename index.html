@@ -313,6 +313,11 @@
         <label>Név <input name="nev" type="text" autocomplete="name" required></label>
         <label>E-mail <input name="email" type="email" autocomplete="email" required></label>
         <label>Telefonszám <input name="telefon" type="tel" autocomplete="tel" required></label>
+        <!-- Számlázási cím: szabad szöveg (külföldi címek miatt), mindhárom kötelező. -->
+        <label>Irányítószám <input name="iranyitoszam" type="text" maxlength="20" autocomplete="postal-code" required></label>
+        <label>Helység <input name="helyseg" type="text" maxlength="100" autocomplete="address-level2" required></label>
+        <label>További címadat <span class="opt">(kerület, utca, házszám, stb.)</span>
+          <input name="cim_tovabbi" type="text" maxlength="200" autocomplete="street-address" required></label>
         <label>Létszám (fő) <input name="letszam" type="number" min="1" step="1" required></label>
         <label>Megjegyzés <span class="opt">(opcionális)</span> <textarea name="megjegyzes" rows="2"></textarea></label>
         <p class="form-err" id="mErr" hidden></p>
@@ -347,12 +352,17 @@
     <div id="aFormWrap">
       <p class="eyebrow">Egyedi ajánlatkérés</p>
       <h2 id="aTitle" class="m-title">…</h2>
-      <p class="m-meta" id="aMeta">Mondd el a részleteket, és személyre szabott ajánlattal keresünk meg e-mailben.</p>
 
       <form id="ajanlatForm" novalidate>
+        <div class="infobar" id="aInfosav" hidden></div>
         <label>Név <input name="nev" type="text" autocomplete="name" required></label>
         <label>E-mail <input name="email" type="email" autocomplete="email" required></label>
         <label>Telefonszám <input name="telefon" type="tel" autocomplete="tel" required></label>
+        <!-- Számlázási cím: szabad szöveg (külföldi címek miatt), mindhárom kötelező. -->
+        <label>Irányítószám <input name="iranyitoszam" type="text" maxlength="20" autocomplete="postal-code" required></label>
+        <label>Helység <input name="helyseg" type="text" maxlength="100" autocomplete="address-level2" required></label>
+        <label>További címadat <span class="opt">(kerület, utca, házszám, stb.)</span>
+          <input name="cim_tovabbi" type="text" maxlength="200" autocomplete="street-address" required></label>
         <label>Létszám (fő) <input name="letszam" type="number" min="1" step="1" required></label>
         <label>Kívánt időpont <input name="kivant_idopont" type="datetime-local" required></label>
         <label>Mit szeretnél? <span class="opt">(pár mondat)</span> <textarea name="keres_szoveg" rows="3" required></textarea></label>

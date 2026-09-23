@@ -88,6 +88,46 @@ main h2{font-size:28px; margin:0 0 18px}
   .tab-csoport-cim{padding:0 10px}
 }
 
+/* ---- Partnerek fül ---- */
+.partner-fejlec{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:12px}
+.partner-szurok{display:flex; gap:20px; align-items:flex-end; flex-wrap:wrap}
+.partner-szurok label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--hamu); font-weight:600}
+.partner-datumok{display:flex; align-items:center; gap:6px}
+.partner-kotojel{color:var(--hamu-2)}
+.partner-kapcsolo{flex-direction:row !important; align-items:center; gap:8px !important; cursor:pointer}
+.partner-kapcsolo small{display:block; color:var(--hamu-2); font-weight:400}
+.partner-info{font-size:13px; color:var(--hamu-2); margin:0 0 12px}
+
+.partner-tabla .kereso-sor th{padding-top:0; padding-bottom:8px}
+.partner-kereso{width:100%; min-width:90px; font-family:"Hanken Grotesk"; font-size:13px; color:var(--text);
+  background:var(--korom); border:1px solid var(--line); border-radius:8px; padding:5px 8px}
+.partner-kereso:focus{outline:none; border-color:var(--parazs)}
+.partner-sor{cursor:pointer}
+.partner-sor:hover{background:rgba(245,158,11,.05)}
+.partner-sor.nyitva{background:rgba(245,158,11,.07)}
+.partner-nyil{color:var(--lang); font-size:11px}
+.pill.visszatero{margin-left:6px}
+.partner-reszlet > td{background:var(--korom); padding:0 14px 14px}
+.partner-alsotabla{width:100%; border-collapse:collapse; font-size:13px}
+.partner-alsotabla th{font-family:"Space Mono",monospace; font-size:10.5px; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--hamu-2); text-align:left; padding:8px 10px 6px}
+.partner-alsotabla td{padding:6px 10px; border-top:1px solid var(--line); color:var(--hamu)}
+/* Az azonosító kattintható: átvisz a foglalásra / ajánlatra */
+.azon-link{font-family:"Space Mono",monospace; font-size:12.5px; font-weight:700; color:var(--lang);
+  background:none; border:0; padding:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+.azon-link:hover{color:var(--lang-2)}
+@media(max-width:820px){
+  .partner-fejlec{flex-direction:column; align-items:stretch}
+  .partner-tabla .kereso-sor{display:none}   /* keskeny kijelzőn a kereső-sor zavarna */
+}
+
+/* ---- Ajánlat-részletek: az olvasható adatok és a szerkeszthető rész határa ---- */
+.aj-szerk-fejlec{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  margin:22px 0 14px; padding-top:14px; border-top:1px solid var(--line)}
+.aj-szerk-cim{font-family:"Space Mono",monospace; font-size:11px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--egyedi-2)}
+.aj-szerk-alcim{font-size:12.5px; color:var(--hamu-2)}
+
 /* ---- Beállítások: három blokk (általános · nyilvános programok · egyedi megrendelések) ----
    A színek a fülsoréval egyeznek: narancs = nyilvános ág, lila = egyedi ág. */
 .beall-blokk{--akcent:var(--hamu-2); margin:0 0 34px}
