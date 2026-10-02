@@ -88,6 +88,28 @@ main h2{font-size:28px; margin:0 0 18px}
   .tab-csoport-cim{padding:0 10px}
 }
 
+/* ---- Előadóink fül: csupasz lista ---- */
+.eloado-info{font-size:13px; color:var(--hamu-2); margin:0; max-width:640px}
+.eloado-sorok{display:flex; flex-direction:column; border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.eloado-sor{display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--korom-2)}
+.eloado-sor + .eloado-sor{border-top:1px solid var(--line)}
+.eloado-sor:hover{background:var(--brick)}
+.eloado-nev{font-weight:700; color:var(--text); font-size:15px}
+.eloado-jelek{display:flex; gap:8px; align-items:center}
+.eloado-progjel{font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--hamu-2); border:1px solid var(--line); border-radius:999px; padding:2px 9px}
+.eloado-gombok{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap}
+
+/* A program-szerkesztőben: pipálható előadó-lista */
+.eloado-valaszto{display:flex; flex-wrap:wrap; gap:8px 18px; padding:12px 14px;
+  background:var(--korom); border:1px solid var(--line); border-radius:10px}
+.eloado-opcio{display:flex; align-items:center; gap:8px; font-size:14.5px; color:var(--text); cursor:pointer}
+.eloado-opcio input{accent-color:var(--parazs); width:16px; height:16px}
+@media(max-width:560px){
+  .eloado-sor{flex-wrap:wrap}
+  .eloado-gombok{margin-left:0; width:100%}
+}
+
 /* ---- Partnerek fül ---- */
 .partner-fejlec{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:12px}
 .partner-szurok{display:flex; gap:20px; align-items:flex-end; flex-wrap:wrap}

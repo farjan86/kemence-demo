@@ -127,6 +127,7 @@ function valtTab(nev){
   if(nev === "ajanlatok"){ betoltAjanlatok(); }      // ajanlatok.js
   if(nev === "naptar"){ betoltNaptar(); }            // naptar.js
   if(nev === "partnerek"){ betoltPartnerek(); }      // partnerek.js
+  if(nev === "eloadok"){ betoltEloadok(); }          // eloadok.js
 }
 
 // -------------------- Indítás: van-e élő munkamenet? --------------------

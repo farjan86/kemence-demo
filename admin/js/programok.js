@@ -17,6 +17,45 @@ let idopontFoglaltFo = new Map();     // idopont_id → élő (foglalt) fő; a m
 let torlesLezarttal = new Set();      // idopont-id-k, amelyeket a lezárt (lemondott/elutasított) foglalásaikkal EGYÜTT törlünk (mentéskor)
 
 // --- Rich text (félkövér / dőlt / felsorolás) a leírás-mezőkhöz ---
+// --- Előadók (a szerkesztőben pipálható lista; az Előadóink fülön kezelhetők) ---
+let progEloadok       = [];          // az összes felvett előadó
+let progEloadoKapcsok = new Map();   // workshop_id → [eloado_id, …]
+
+// A programlistához és a szerkesztőhöz is kell: kik vannak, és ki melyik programon.
+async function betoltEloadoAdatok(){
+  const [{ data: eloadok }, { data: kapcsok }] = await Promise.all([
+    db.from("eloadok").select("id, nev, rejtett").order("sorrend", { ascending:true }).order("nev", { ascending:true }),
+    db.from("program_eloadok").select("workshop_id, eloado_id"),
+  ]);
+  progEloadok = eloadok || [];
+  progEloadoKapcsok = new Map();
+  (kapcsok || []).forEach(k => {
+    if(!progEloadoKapcsok.has(k.workshop_id)) progEloadoKapcsok.set(k.workshop_id, []);
+    progEloadoKapcsok.get(k.workshop_id).push(k.eloado_id);
+  });
+}
+
+// Egy program előadóinak neve, az Előadóink lista sorrendjében
+function programEloadoNevek(workshopId){
+  const idk = progEloadoKapcsok.get(workshopId) || [];
+  return progEloadok.filter(e => idk.includes(e.id)).map(e => e.nev);
+}
+
+// A szerkesztőben: jelölőnégyzetes lista, a kiválasztottak bepipálva
+function renderEloadoValaszto(kivalasztott){
+  const cel = document.getElementById("progEloadoLista");
+  if(!cel) return;
+  if(progEloadok.length === 0){
+    cel.innerHTML = `<p class="prog-nincs-ido">Még nincs felvett előadó — az <b>Előadóink</b> fülön tudsz felvenni.</p>`;
+    return;
+  }
+  cel.innerHTML = progEloadok.map(e => `
+    <label class="eloado-opcio">
+      <input type="checkbox" value="${e.id}"${kivalasztott.includes(e.id) ? " checked" : ""}>
+      <span>${escapeHtml(e.nev)}${e.rejtett ? ` <small class="arch-jel">rejtett</small>` : ""}</span>
+    </label>`).join("");
+}
+
 const edRovid     = document.getElementById("edRovid");
 const edReszletes = document.getElementById("edReszletes");
 try { document.execCommand("styleWithCSS", false, false); } catch(_){}
@@ -171,6 +210,8 @@ async function betoltProgramLista(){
     }
   });
 
+  await betoltEloadoAdatok();
+
   progLista = (ws || []).map(w => ({
     ...w,
     idopontok: (idoByWs.get(w.id) || []).sort((a, b) => new Date(a.idopont) - new Date(b.idopont))
@@ -199,7 +240,8 @@ async function betoltProgramLista(){
       : "";
     // A főoldalon ilyenkor az „Új időpontok egyeztetés alatt" sáv jelenik meg (archívnál nincs jelentősége).
     const nincsJovoMegj = (hamarosan || progArchivNezet) ? "" : " — a főoldalon „Új időpontok egyeztetés alatt” felirattal jelenik meg";
-    const eloadoSor = p.eloado ? `<div class="prog-eloado">Előadó: ${escapeHtml(p.eloado)}</div>` : "";
+    const eNevek = programEloadoNevek(p.id);
+    const eloadoSor = eNevek.length ? `<div class="prog-eloado">Előadó: ${escapeHtml(eNevek.join(", "))}</div>` : "";
 
     const idoSorok = p.idopontok.length
       ? `<ul class="prog-idopontok">` + p.idopontok.map(i => {
@@ -309,7 +351,7 @@ function nyitProgram(id){
     progForm.cim.value               = p.cim;
     edRovid.innerHTML     = tisztitHtml(p.rovid_leiras || "");
     edReszletes.innerHTML = tisztitHtml(p.leiras || "");
-    progForm.eloado.value            = p.eloado ?? "";
+    renderEloadoValaszto(progEloadoKapcsok.get(p.id) || []);
     progForm.varhato_idotartam.value = p.varhato_idotartam ?? "";
     renderIdopontSorok(p.idopontok);
     if(p.foto_url){
@@ -318,6 +360,7 @@ function nyitProgram(id){
     }
   } else {
     progForm.statusz.value = "aktiv";
+    renderEloadoValaszto([]);
     renderIdopontSorok([{}]);   // egy üres időpont-sor
   }
   // Élő foglalással rendelkező programnál a „Hamarosan” nem választható (nincs időpont/foglalás).
@@ -397,7 +440,9 @@ progForm.addEventListener("submit", async e => {
   const cim      = progForm.cim.value.trim();
   const rovid_leiras = edRovid.textContent.trim() ? tisztitHtml(edRovid.innerHTML) : "";
   const leiras       = edReszletes.textContent.trim() ? tisztitHtml(edReszletes.innerHTML) : null;
-  const eloado   = progForm.eloado.value.trim() || null;
+  // A kipipált előadók azonosítói — a program_eloadok tábla az igazság forrása
+  const valasztottEloadok = [...document.querySelectorAll("#progEloadoLista input[type=checkbox]:checked")]
+    .map(cb => cb.value);
   const varhato_idotartam = progForm.varhato_idotartam.value.trim() || null;
 
   if(!cim)          return pHiba("A cím kötelező.");
@@ -482,7 +527,7 @@ progForm.addEventListener("submit", async e => {
   }
 
   // 1) Program (workshop) mentése
-  const sor = { statusz, cim, rovid_leiras, leiras, eloado, varhato_idotartam, foto_url };
+  const sor = { statusz, cim, rovid_leiras, leiras, varhato_idotartam, foto_url };
   let workshopId = id;
   if(id){
     const { error } = await db.from("workshops").update(sor).eq("id", id);
@@ -492,6 +537,24 @@ progForm.addEventListener("submit", async e => {
     const { data, error } = await db.from("workshops").insert({ ...sor, sorrend: progLista.length }).select("id").single();
     if(error){ gomb.disabled = false; return pHiba("Mentési hiba: " + error.message); }
     workshopId = data.id;
+  }
+
+  // 1/b) Előadó-kapcsolatok szinkronizálása: a kipipáltak maradnak/kerülnek be,
+  //       a kivettek törlődnek. (A kapcsolat törlése nem érinti magát az előadót.)
+  {
+    const regi = progEloadoKapcsok.get(workshopId) || [];
+    const torlendo = regi.filter(x => !valasztottEloadok.includes(x));
+    const ujak     = valasztottEloadok.filter(x => !regi.includes(x));
+    if(torlendo.length){
+      const { error } = await db.from("program_eloadok")
+        .delete().eq("workshop_id", workshopId).in("eloado_id", torlendo);
+      if(error){ gomb.disabled = false; return pHiba("Az előadók mentése nem sikerült: " + error.message); }
+    }
+    if(ujak.length){
+      const { error } = await db.from("program_eloadok")
+        .insert(ujak.map(eloado_id => ({ workshop_id: workshopId, eloado_id })));
+      if(error){ gomb.disabled = false; return pHiba("Az előadók mentése nem sikerült: " + error.message); }
+    }
   }
 
   // 2) Időpontok szinkronizálása — CSAK aktív programnál. A „Hamarosan” nem tart időpontot;

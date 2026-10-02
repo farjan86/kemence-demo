@@ -60,6 +60,12 @@
           <button class="tab" data-tab="egyediprogramok">Egyedi programok</button>
         </div>
       </div>
+      <div class="tab-csoport cs-csapat">
+        <span class="tab-csoport-cim">Csapat</span>
+        <div class="tab-csoport-gombok">
+          <button class="tab" data-tab="eloadok">Előadóink</button>
+        </div>
+      </div>
       <div class="tab-csoport cs-beallitas">
         <span class="tab-csoport-cim">Rendszer</span>
         <div class="tab-csoport-gombok">
@@ -209,6 +215,18 @@
       </div>
       <p class="partner-info" id="pOsszegzes"></p>
       <div id="partnerLista"><p class="status">Betöltés…</p></div>
+    </section>
+
+    <!-- ===== Előadóink fül ===== -->
+    <section class="tab-panel" data-panel="eloadok" hidden>
+      <div class="prog-fejlec">
+        <p class="eloado-info">A főoldal „Rólunk” szakaszában a nevek kattinthatóan jelennek meg; a névre kattintva a bemutatkozás nyílik meg.</p>
+        <div class="prog-gombok">
+          <span class="mentve" id="eloadoSorrendMentve" hidden>Sorrend mentve ✓</span>
+          <button class="btn" id="ujEloadoBtn">+ Új előadó</button>
+        </div>
+      </div>
+      <div id="eloadoLista"><p class="status">Betöltés…</p></div>
     </section>
 
     <!-- ===== Beállítások fül ===== -->
@@ -394,7 +412,10 @@
           <div class="rte-ed rte-nagy" id="edReszletes" contenteditable="true" data-ph="Részletes leírás…"></div>
         </div>
       </div>
-      <label>Előadó <small>opcionális, több név vesszővel (a kártyán: „Előadó: …")</small> <input name="eloado" type="text"></label>
+      <div class="mezo">
+        <span class="mezo-cimke">Előadók <small>(a kártyán: „Előadó: …" — az Előadóink fülön veheted fel őket)</small></span>
+        <div id="progEloadoLista" class="eloado-valaszto"></div>
+      </div>
       <label>Várható időtartam <small>opcionális, pl. „~4 óra"</small> <input name="varhato_idotartam" type="text"></label>
 
       <div class="mezo" id="idopontokMezo">
@@ -506,6 +527,40 @@
   </div>
 </div>
 
+<!-- Előadó-szerkesztő ablak (rejtve) -->
+<div class="modal" id="eloadoModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="eloadoCim">
+    <button class="modal-close" id="eloadoClose" aria-label="Bezárás">×</button>
+    <h2 id="eloadoCim" class="m-title">Új előadó</h2>
+    <form id="eloadoForm" class="mform">
+      <label>Név <input name="nev" type="text" maxlength="100" required></label>
+      <div class="mezo">
+        <span class="mezo-cimke">Bemutatkozás <small>(ez jelenik meg a főoldali ablakban)</small></span>
+        <div class="rte">
+          <div class="rte-tb">
+            <button type="button" class="rte-b" data-cmd="bold" title="Félkövér"><b>B</b></button>
+            <button type="button" class="rte-b" data-cmd="italic" title="Dőlt"><i>I</i></button>
+            <button type="button" class="rte-b" data-cmd="underline" title="Aláhúzás"><u>U</u></button>
+            <button type="button" class="rte-b" data-size="1" title="Nagyobb betű">A+</button>
+            <button type="button" class="rte-b" data-size="-1" title="Kisebb betű">A−</button>
+            <button type="button" class="rte-b" data-cmd="insertUnorderedList" title="Felsorolás">•—</button>
+          </div>
+          <div class="rte-ed rte-nagy" id="edEloadoBemutatkozas" contenteditable="true" data-ph="Pár mondat róla…"></div>
+        </div>
+      </div>
+      <label>Fénykép <small>opcionális</small>
+        <input name="foto" id="eloadoFoto" type="file" accept="image/*">
+      </label>
+      <div id="eloadoFotoElonezet" class="foto-elonezet" hidden><img id="eloadoFotoImg" alt="előadó fotó"></div>
+      <p class="form-err" id="eloadoErr" hidden></p>
+      <div class="beall-foot">
+        <button class="btn" type="submit">Mentés</button>
+        <button class="btn ghost" type="button" id="eloadoMegse">Mégse</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Ajánlat elfogadása — végleges adatok + csatolmány (rejtve) -->
 <div class="modal" id="ajElfogadModal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="ajElfCim">
@@ -595,6 +650,7 @@
 <script src="js/egyediprogramok.js" defer></script>
 <script src="js/ajanlatok.js" defer></script>
 <script src="js/naptar.js" defer></script>
+<script src="js/eloadok.js" defer></script>
 <script src="js/partnerek.js" defer></script>
 <script src="js/beallitasok.js" defer></script>
 </body>

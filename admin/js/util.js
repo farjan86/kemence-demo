@@ -18,7 +18,7 @@ function isoToLocalInput(iso){
 
 // A foglalás időpontja / programja (a bookings → idopontok → workshops join alapján)
 const idoOf  = b => b?.idopontok || null;              // időpont (idopont, ar, max_letszam, statusz, workshop_id)
-const progOf = b => b?.idopontok?.workshops || null;   // program (cim, eloado, statusz, archivalt)
+const progOf = b => b?.idopontok?.workshops || null;   // program (cim, statusz, archivalt)
 
 // Időállapot egy időpont alapján (közeledő / ma / múltbéli)
 function masodlagos(iso){
@@ -147,4 +147,4 @@ async function sortableSorrend(container, tabla, jelzoEl){
 
 // A foglalások közös SELECT-je (időpont + program az idopont_id join mentén)
 const BOOKING_SELECT =
-  "*, idopontok ( id, idopont, ar, kedvezmenyes_ar, max_letszam, statusz, workshop_id, workshops ( cim, eloado, archivalt, statusz ) )";
+  "*, idopontok ( id, idopont, ar, kedvezmenyes_ar, max_letszam, statusz, workshop_id, workshops ( cim, archivalt, statusz ) )";

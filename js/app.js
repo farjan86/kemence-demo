@@ -68,7 +68,7 @@ function kartya(p){
   const kep    = p.foto_url ? `<img class="card-kep" src="${p.foto_url}" alt="" loading="lazy">` : "";
   const rovid  = tisztitHtml(p.rovid_leiras || p.leiras || "");
   const reszlet = p.leiras ? `<button class="reszlet-btn" data-reszlet="${p.workshop_id}">Részletek →</button>` : "";
-  const eloadoHtml = p.eloado ? `<p class="eloado">Előadó: <b>${escapeHtml(p.eloado)}</b></p>` : "";
+  const eloadoHtml = eloadoSorHtml(p);   // eloadok.js — kattintható nevek
 
   // Csak a JÖVŐBELI időpontokat mutatjuk (a múltat elrejtjük), időrendben.
   const jovo = p.idopontok
@@ -142,7 +142,8 @@ async function betoltProgramok(){
     if(!p){
       p = {
         workshop_id: r.workshop_id, cim: r.cim, rovid_leiras: r.rovid_leiras, leiras: r.leiras,
-        eloado: r.eloado, varhato_idotartam: r.varhato_idotartam, foto_url: r.foto_url,
+        eloadok: r.eloadok || null,   // [{id, nev, rejtett}, …] a nézetből
+        varhato_idotartam: r.varhato_idotartam, foto_url: r.foto_url,
         program_statusz: r.program_statusz, foglalas_felfuggesztve: r.foglalas_felfuggesztve,
         sorrend: r.sorrend, idopontok: []
       };
@@ -173,6 +174,7 @@ async function betoltProgramok(){
     b.addEventListener("click", () => nyitFoglalas(b.dataset.idopont)));   // nyitFoglalas: foglalas.js
   cel.querySelectorAll(".reszlet-btn[data-reszlet]").forEach(b =>
     b.addEventListener("click", () => mutatReszletek(b.dataset.reszlet)));
+  kotProgramEloadok();          // eloadok.js — a kártyákon lévő előadó-nevek
 }
 
 // -------------------- Részletek ablak --------------------
