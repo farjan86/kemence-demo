@@ -58,14 +58,28 @@ function kotEloadoKattintas(gyoker){
     b.addEventListener("click", () => nyitEloadoAblak(b.dataset.eloado)));
 }
 
+// A név kezdőbetűi (legfeljebb kettő), ha nincs feltöltve fénykép.
+function monogram(nev){
+  return (nev || "")
+    .split(/\s+/).filter(Boolean).slice(0, 2)
+    .map(sz => sz[0].toUpperCase()).join("");
+}
+
 function nyitEloadoAblak(id){
   const e = eloadoMap.get(id);
   if(!e) return;                       // rejtett vagy időközben törölt előadó
   document.getElementById("eloadoNev").textContent = e.nev;
 
-  const kep = document.getElementById("eloadoKep");
-  if(e.foto_url){ kep.src = e.foto_url; kep.alt = e.nev; kep.hidden = false; }
-  else { kep.removeAttribute("src"); kep.hidden = true; }
+  // Fénykép, vagy — ha nincs — a nevéből képzett monogram.
+  const kep  = document.getElementById("eloadoKep");
+  const mono = document.getElementById("eloadoMono");
+  if(e.foto_url){
+    kep.src = e.foto_url; kep.alt = e.nev; kep.hidden = false;
+    mono.hidden = true;
+  } else {
+    kep.removeAttribute("src"); kep.alt = ""; kep.hidden = true;   // az alt-ot is ürítjük
+    mono.textContent = monogram(e.nev); mono.hidden = false;
+  }
 
   // A bemutatkozás az adminban formázható; a tisztitHtml csak a biztonságos
   // címkéket engedi át (félkövér, dőlt, felsorolás, sortörés).

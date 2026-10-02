@@ -153,6 +153,18 @@ a{color:inherit; text-decoration:none}
 .eloado-kep{display:block; margin:0 auto 14px;
   width:min(260px,100%); height:320px; object-fit:contain; object-position:center;
   border-radius:16px}
+/* Fénykép nélküli előadónál a kép el van rejtve. A `display:block` erősebb a
+   böngésző [hidden] szabályánál, ezért itt külön ki kell kapcsolni. */
+.eloado-kep[hidden]{display:none}
+/* Fénykép helyett monogram: kisebb, mint a képkeret, így az ablak is
+   alacsonyabb marad — de nem hat befejezetlennek. */
+.eloado-mono{display:grid; place-items:center; margin:0 auto 14px;
+  width:110px; height:110px; border-radius:50%;
+  background:linear-gradient(180deg, var(--brick-2), var(--brick));
+  border:1px solid var(--line);
+  font-family:"Fraunces",Georgia,serif; font-weight:900; font-size:38px;
+  letter-spacing:.02em; color:var(--lang-2)}
+.eloado-mono[hidden]{display:none}
 .eloado-fej .eyebrow{text-align:center; margin:0 0 6px}
 .eloado-fej .m-title{text-align:center; margin:0}
 .eloado-bemutatkozas{color:var(--hamu); font-size:16px; line-height:1.65}
