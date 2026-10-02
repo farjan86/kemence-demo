@@ -143,15 +143,25 @@ a{color:inherit; text-decoration:none}
 
 /* A bemutatkozó ablak szélesebb, és a fénykép nagy, portré-arányú */
 #eloadoModal .modal-card{max-width:680px}
-.eloado-fej{display:flex; align-items:flex-start; gap:22px; margin-bottom:18px}
-.eloado-kep{max-width:210px; max-height:260px; width:auto; height:auto;
-  border-radius:16px; flex:none; border:1px solid var(--line)}
+/* A fénykép BALRA úsztatva: a név és a bemutatkozás is körbefolyja, így nem
+   marad üres folt a név mellett, és a kép sem vágódik le (arányosan kicsinyedik). */
+.eloado-fej{display:block; margin-bottom:6px}
+/* EGYSÉGES FÉNYKÉP-KERET. Az admin bármilyen képet feltölthet: a kép a keretbe
+   illeszkedik (object-fit:contain), tehát sosem vágódik le, a túl kicsi kép pedig
+   felnagyítódik. Így minden előadó ugyanakkora, rendezett képet kap. */
+.eloado-kep{float:left; margin:2px 22px 14px 0;
+  width:215px; height:270px; object-fit:contain; object-position:center;
+  background:var(--brick); border-radius:16px; border:1px solid var(--line)}
+.eloado-fej .eyebrow{margin-top:2px}
+.eloado-bemutatkozas::after{content:""; display:block; clear:both}
 .eloado-bemutatkozas{color:var(--hamu); font-size:16px; line-height:1.65}
 .eloado-bemutatkozas p{margin:0 0 10px}
 .eloado-bemutatkozas .halvany{color:var(--hamu-2); font-style:italic}
 @media(max-width:560px){
-  .eloado-fej{flex-direction:column; align-items:center; text-align:center; gap:14px}
-  .eloado-kep{max-width:280px; max-height:320px; width:auto; height:auto}
+  /* Keskeny kijelzőn nincs körbefolyatás: a kép fölül, középen. */
+  .eloado-fej{text-align:center}
+  .eloado-kep{float:none; display:block; margin:0 auto 14px;
+    width:min(280px,100%); height:320px}
 }
 
 .infobar{font-size:13.5px; color:var(--izzas); background:rgba(228,87,27,.1);
