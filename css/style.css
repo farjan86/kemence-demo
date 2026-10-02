@@ -47,8 +47,7 @@ a{color:inherit; text-decoration:none}
   text-transform:uppercase; padding:5px 9px; border-radius:999px; white-space:nowrap;
   border:1px solid var(--line); color:var(--hamu)}
 .badge.soon{color:var(--lang); border-color:var(--lang)}
-.card p.desc{color:var(--hamu); font-size:17px; margin:0 0 10px;
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
+.card p.desc{color:var(--hamu); font-size:17px; margin:0 0 10px}
 .reszlet-btn{align-self:flex-start; background:none; border:0; cursor:pointer; padding:0; margin:0 0 16px;
   font-family:"Space Mono",monospace; font-size:15px; color:var(--lang); text-decoration:underline dotted}
 .reszlet-btn:hover{color:var(--izzas)}
@@ -145,14 +144,14 @@ a{color:inherit; text-decoration:none}
 /* A bemutatkozó ablak szélesebb, és a fénykép nagy, portré-arányú */
 #eloadoModal .modal-card{max-width:680px}
 .eloado-fej{display:flex; align-items:flex-start; gap:22px; margin-bottom:18px}
-.eloado-kep{width:210px; height:250px; border-radius:16px; object-fit:cover; flex:none;
-  border:1px solid var(--line)}
+.eloado-kep{max-width:210px; max-height:260px; width:auto; height:auto;
+  border-radius:16px; flex:none; border:1px solid var(--line)}
 .eloado-bemutatkozas{color:var(--hamu); font-size:16px; line-height:1.65}
 .eloado-bemutatkozas p{margin:0 0 10px}
 .eloado-bemutatkozas .halvany{color:var(--hamu-2); font-style:italic}
 @media(max-width:560px){
   .eloado-fej{flex-direction:column; align-items:center; text-align:center; gap:14px}
-  .eloado-kep{width:100%; max-width:280px; height:300px}
+  .eloado-kep{max-width:280px; max-height:320px; width:auto; height:auto}
 }
 
 .infobar{font-size:13.5px; color:var(--izzas); background:rgba(228,87,27,.1);
@@ -192,8 +191,11 @@ a.btn{display:inline-block; text-decoration:none}
 .topnav a:hover{color:var(--izzas)}
 
 /* hero — középre zárt banner a kép arányában (teljes kép, vágás nélkül, elmosott szélek) */
-.hero{position:relative; overflow:hidden;
-  width:100%; max-width:1920px; margin:14px auto 0; aspect-ratio:16 / 5; background:transparent}
+/* A 16:5 arány MINIMUM, nem fix méret: ha a szöveg magasabb, a doboz megnő,
+   nem levágja a tetejét. A szöveg a normál folyamban van, alulra simítva. */
+.hero{position:relative; overflow:hidden; display:flex; align-items:flex-end;
+  width:100%; max-width:1920px; margin:14px auto 0; min-height:min(31.25vw, 600px);
+  background:transparent}
 /* a kép széleit lágyan a lap hátterébe fadeljük (nincs éles keret) */
 .hero-slideshow{position:absolute; inset:0; z-index:0; overflow:hidden;
   -webkit-mask-image:
@@ -220,7 +222,7 @@ a.btn{display:inline-block; text-decoration:none}
   background:
     linear-gradient(0deg, rgba(22,16,11,.94) 0%, rgba(22,16,11,.55) 24%, rgba(22,16,11,0) 48%),
     linear-gradient(90deg, rgba(22,16,11,.6) 0%, rgba(22,16,11,.1) 50%, transparent 70%)}
-.hero-text{position:absolute; left:0; right:0; bottom:0; z-index:2; padding:24px 24px 42px}
+.hero-text{position:relative; width:100%; z-index:2; padding:24px 24px 42px}
 .hero h1{font-size:clamp(30px,4.4vw,54px); margin:12px 0 14px; max-width:18ch; text-shadow:0 2px 22px rgba(0,0,0,.6)}
 .hero-lead{color:var(--izzas); font-size:clamp(15px,1.8vw,19px); max-width:56ch; margin:0 0 22px; text-shadow:0 1px 12px rgba(0,0,0,.6)}
 .hero-cta{display:flex; gap:12px; flex-wrap:wrap}
@@ -228,9 +230,10 @@ a.btn{display:inline-block; text-decoration:none}
 .hero-logo{position:absolute; z-index:1; right:clamp(2px,0.6vw,10px); bottom:clamp(2px,0.6vw,10px);
   width:clamp(170px,25vw,340px); height:auto; opacity:.3; pointer-events:none;
   filter:drop-shadow(0 6px 26px rgba(0,0,0,.5))}
-/* ≤760px: a wide banner túl alacsony lenne az overlayhez → a szöveg a kép ALÁ kerül */
-@media(max-width:760px){
-  .hero{aspect-ratio:auto; max-height:none}
+/* ≤1100px: a wide banner túl alacsony lenne az overlayhez → a szöveg a kép ALÁ kerül,
+   hogy tableten és fekvő telefonon is olvasható maradjon (nem a fényképre írva). */
+@media(max-width:1100px){
+  .hero{display:block; min-height:0; max-height:none}
   .hero-slideshow{position:relative; aspect-ratio:2048 / 794}
   .hero-veil{display:none}
   .hero-text{position:static; padding-top:30px; padding-bottom:34px}
@@ -437,7 +440,8 @@ a.btn{display:inline-block; text-decoration:none}
   100%{opacity:.72; transform:scaleY(.94)}
 }
 @media(prefers-reduced-motion:reduce){ .tuz-izzas{animation:none} }
-.site-header .nav{height:98px; gap:30px; justify-content:flex-start}
+.site-header .nav{min-height:98px; height:auto; gap:30px; padding:8px 0;
+  justify-content:flex-start; flex-wrap:wrap}
 .site-header .brand{gap:13px; margin-right:auto}
 .brand-badge{width:66px; height:66px; border-radius:16px; object-fit:cover; border:1px solid var(--line); background:var(--brick); flex:none; display:block}
 .brand-txt{display:flex; flex-direction:column; line-height:1.15}
@@ -451,6 +455,18 @@ a.btn{display:inline-block; text-decoration:none}
 .nav-btn:hover{filter:brightness(1.06); transform:translateY(-1px); color:#231206}
 /* Két fejléc-CTA egymás mellett, azonos stílussal */
 .nav-btnok{display:flex; align-items:center; gap:12px; flex:none}
+/* 901–1300px: a teljes menü + két gomb + márkanév épphogy nem fér ki,
+   ezért ebben a sávban szorosabb térköz és egy fokkal kisebb betű. */
+@media(min-width:901px) and (max-width:1300px){
+  .site-header .nav{gap:14px}
+  .site-header .brand{gap:10px}
+  .brand-badge{width:52px; height:52px; border-radius:13px}
+  .brand-txt strong{font-size:24px}
+  .brand-txt small{font-size:10.5px; letter-spacing:.1em; margin-top:2px}
+  .site-header .topnav{gap:18px; font-size:15.5px}
+  .nav-btn{padding:12px 16px; font-size:14.5px; border-radius:12px}
+  .nav-btnok{gap:8px}
+}
 /* Hamburger gomb — csak mobilon látszik */
 .hamburger{display:none; flex:none; width:46px; height:46px; align-items:center; justify-content:center;
   background:var(--brick); border:1px solid var(--line); border-radius:12px; color:var(--izzas);

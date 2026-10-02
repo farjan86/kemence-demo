@@ -230,7 +230,9 @@ main h2{font-size:28px; margin:0 0 18px}
 
 /* ---- Programok fül ---- */
 .prog-fejlec{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px}
-.altabs{display:flex; gap:4px}
+/* Az aloldal-gombok keskeny kijelzőn tördelődnek, különben az egész admin
+   oldalra görgethetővé válik (564 px alatt ez tört meg). */
+.altabs{display:flex; flex-wrap:wrap; gap:4px}
 .altab{font-family:"Hanken Grotesk"; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--hamu);
   background:var(--brick); border:1px solid var(--line); border-radius:999px; padding:7px 14px}
 .altab.active{color:#231206; background:linear-gradient(180deg,var(--lang-2),var(--parazs)); border-color:transparent}
@@ -289,9 +291,14 @@ main h2{font-size:28px; margin:0 0 18px}
 .megj-cella{text-align:center}
 .megj-ikon{background:none; border:0; cursor:pointer; font-size:15px; padding:2px 4px; line-height:1; border-radius:6px}
 .megj-ikon:hover{background:var(--brick)}
-.tbl .actions{display:flex; gap:6px; flex-wrap:nowrap}
-.tbl td[data-cim="Művelet"]{white-space:nowrap}
+/* A gombok tördelődhetnek: ettől a táblázat minimális szélessége sokkal
+   kisebb, így közepes képernyőn is kifér. */
+.tbl .actions{display:flex; gap:6px; flex-wrap:wrap}
+.tbl td[data-cim="Művelet"]{white-space:normal}
 .tbl .btn.sm{white-space:nowrap}
+/* Ha a táblázat mégsem fér ki, NE az egész oldal csússzon oldalra, hanem
+   maga a táblázat legyen vízszintesen görgethető — így minden oszlop elérhető. */
+#foglalasok, #ajanlatok, #partnerLista{overflow-x:auto}
 .jelentes-sor{display:flex; justify-content:flex-end; margin:0 0 8px}
 
 /* státusz-jelvények */
@@ -341,12 +348,14 @@ main h2{font-size:28px; margin:0 0 18px}
 .ev-honap.most h4{color:var(--lang)}
 .ev-proglista{display:flex; flex-direction:column; gap:6px}
 .ev-nincs{font-family:"Space Mono",monospace; font-size:11.5px; color:var(--hamu-2)}
-.ev-prog{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; width:100%;
+.ev-prog{display:grid; grid-template-columns:auto 1fr auto; align-items:start; gap:8px; width:100%;
   text-align:left; border:1px solid transparent; border-radius:8px; padding:6px 9px; cursor:pointer;
   font-family:inherit; color:var(--text); background:var(--brick); transition:filter .12s}
 .ev-prog:hover{filter:brightness(1.2)}
 .ev-nap{font-family:"Space Mono",monospace; font-size:12px; font-weight:700; color:var(--hamu)}
-.ev-cim{font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+/* A cím tördelődhet: inkább magasabb legyen a doboz, mint hogy „…”-tal
+   levágjuk (érintőképernyőn nincs egér, amivel a súgóbuborék előhívható). */
+.ev-cim{font-size:13.5px; line-height:1.3; overflow-wrap:anywhere}
 .ev-ar{font-family:"Space Mono",monospace; font-size:12px; font-weight:700; white-space:nowrap}
 .ev-prog.fill-ures{background:rgba(180,158,134,.14)}
 .ev-prog.fill-ok{background:rgba(47,163,90,.20); border-color:rgba(47,163,90,.4)}
