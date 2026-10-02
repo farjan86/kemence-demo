@@ -143,25 +143,24 @@ a{color:inherit; text-decoration:none}
 
 /* A bemutatkozó ablak szélesebb, és a fénykép nagy, portré-arányú */
 #eloadoModal .modal-card{max-width:680px}
-/* A fénykép BALRA úsztatva: a név és a bemutatkozás is körbefolyja, így nem
-   marad üres folt a név mellett, és a kép sem vágódik le (arányosan kicsinyedik). */
-.eloado-fej{display:block; margin-bottom:6px}
+/* A fénykép FÖLÜL, KÖZÉPEN; alatta a név, majd a bemutatkozás teljes szélességben.
+   Ez bármilyen képaránynál és bármilyen hosszú szövegnél jól néz ki, és
+   megegyezik a telefonos elrendezéssel. */
+.eloado-fej{display:block; text-align:center; margin-bottom:14px}
 /* EGYSÉGES FÉNYKÉP-KERET. Az admin bármilyen képet feltölthet: a kép a keretbe
    illeszkedik (object-fit:contain), tehát sosem vágódik le, a túl kicsi kép pedig
    felnagyítódik. Így minden előadó ugyanakkora, rendezett képet kap. */
-.eloado-kep{float:left; margin:2px 22px 14px 0;
-  width:215px; height:270px; object-fit:contain; object-position:center;
-  background:var(--brick); border-radius:16px; border:1px solid var(--line)}
-.eloado-fej .eyebrow{margin-top:2px}
-.eloado-bemutatkozas::after{content:""; display:block; clear:both}
+.eloado-kep{display:block; margin:0 auto 14px;
+  width:min(260px,100%); height:320px; object-fit:contain; object-position:center;
+  border-radius:16px}
+.eloado-fej .eyebrow{text-align:center; margin:0 0 6px}
+.eloado-fej .m-title{text-align:center; margin:0}
 .eloado-bemutatkozas{color:var(--hamu); font-size:16px; line-height:1.65}
 .eloado-bemutatkozas p{margin:0 0 10px}
 .eloado-bemutatkozas .halvany{color:var(--hamu-2); font-style:italic}
 @media(max-width:560px){
-  /* Keskeny kijelzőn nincs körbefolyatás: a kép fölül, középen. */
-  .eloado-fej{text-align:center}
-  .eloado-kep{float:none; display:block; margin:0 auto 14px;
-    width:min(280px,100%); height:320px}
+  /* Keskeny kijelzőn alacsonyabb képkeret, hogy ne tolja le a szöveget. */
+  .eloado-kep{height:280px}
 }
 
 .infobar{font-size:13.5px; color:var(--izzas); background:rgba(228,87,27,.1);
