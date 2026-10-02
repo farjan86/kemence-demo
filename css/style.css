@@ -246,7 +246,7 @@ a.btn{display:inline-block; text-decoration:none}
 /* welcome-sáv (csalogató intro a hero alatt) */
 .welcome-band{border-bottom:1px solid var(--line); background:var(--korom-2)}
 .welcome-band .wrap{padding:42px 24px}
-.welcome-lead{font-family:"Fraunces",Georgia,serif; font-weight:400; font-style:italic;
+.welcome-lead{font-family:"Fraunces",Georgia,serif; font-weight:400;
   font-size:clamp(19px,2.3vw,27px); line-height:1.45; color:var(--izzas); max-width:55ch; margin:0}
 .welcome-lead strong{font-style:normal; font-weight:900; color:var(--lang-2)}
 
